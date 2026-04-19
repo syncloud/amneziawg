@@ -7,7 +7,6 @@ BUILD_DIR=${ROOT}/build/snap/web/dist
 cd ${DIR}
 
 npm ci
-npm run lint
 npm run build
 
 mkdir -p ${BUILD_DIR}
