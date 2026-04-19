@@ -27,7 +27,6 @@ const route = useRoute()
 </template>
 
 <style>
-/* Global resets + mobile/desktop utility classes used across views. */
 *,
 *::before,
 *::after {
@@ -63,7 +62,6 @@ body {
   display: flex;
   align-items: center;
   gap: 24px;
-  flex-wrap: wrap;
   padding: 12px 20px;
   border-bottom: 1px solid var(--el-border-color-light);
 }
@@ -83,6 +81,36 @@ body {
 @media (min-width: 769px) {
   .app-main {
     padding: 24px;
+  }
+}
+
+/* Mobile: stack title above menu, make the menu swipe-scrollable so
+   all four items are reachable on narrow viewports. Overriding
+   Element Plus internals with :deep() because el-menu's own overflow
+   handling hides extras rather than letting them scroll. */
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px 12px;
+  }
+  .app-title {
+    padding: 4px 4px 8px;
+  }
+  .app-menu {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .app-menu :deep(.el-menu) {
+    min-width: max-content;
+  }
+  .app-menu :deep(.el-menu-item) {
+    padding: 0 14px;
+    height: 44px;
+    line-height: 44px;
+    font-size: 14px;
   }
 }
 </style>
