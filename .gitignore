@@ -1,0 +1,10 @@
+build/
+artifact/
+*.snap
+package.name
+
+web/node_modules/
+
+.DS_Store
+*.swp
+*~
