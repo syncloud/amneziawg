@@ -6,7 +6,12 @@ const route = useRoute()
 <template>
   <el-container class="app-container">
     <el-header class="app-header" height="auto">
-      <div class="app-title">AmneziaWG</div>
+      <div class="header-top">
+        <div class="app-title">AmneziaWG</div>
+        <a href="/auth/logout" class="logout-link">
+          <el-button text>Logout</el-button>
+        </a>
+      </div>
       <el-menu
         :default-active="route.name as string"
         mode="horizontal"
@@ -17,9 +22,6 @@ const route = useRoute()
         <el-menu-item index="dashboard" :route="{ name: 'dashboard' }">Dashboard</el-menu-item>
         <el-menu-item index="peers" :route="{ name: 'peers' }">Peers</el-menu-item>
       </el-menu>
-      <a href="/auth/logout" class="logout-link">
-        <el-button text>Logout</el-button>
-      </a>
     </el-header>
     <el-main class="app-main">
       <router-view />
@@ -60,64 +62,61 @@ body {
   min-height: 100vh;
 }
 .app-header {
+  padding: 0 20px;
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+.header-top {
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--el-border-color-light);
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
 }
 .app-title {
   font-weight: 600;
   font-size: 18px;
-  flex-shrink: 0;
-}
-.app-menu {
-  flex: 1;
-  border-bottom: none;
-  min-width: 0;
 }
 .logout-link {
   text-decoration: none;
-  flex-shrink: 0;
+}
+.app-menu {
+  border-bottom: none;
 }
 .app-main {
   padding: 16px;
 }
 @media (min-width: 769px) {
+  .app-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .header-top {
+    padding: 12px 0;
+    flex: 0 0 auto;
+  }
+  .app-menu {
+    flex: 1;
+  }
   .app-main {
     padding: 24px;
   }
 }
-
 @media (max-width: 768px) {
   .app-header {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0;
-    padding: 8px 12px;
+    padding: 0 12px;
   }
-  .app-title {
-    padding: 4px 4px 8px;
-    flex: 1;
-  }
-  .logout-link {
-    margin-left: auto;
-  }
-  .app-menu {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    order: 3;
-  }
-  .app-menu :deep(.el-menu) {
-    min-width: max-content;
+  .header-top {
+    padding: 10px 0;
   }
   .app-menu :deep(.el-menu-item) {
-    padding: 0 14px;
+    padding: 0 16px;
     height: 44px;
     line-height: 44px;
     font-size: 14px;
+    flex: 1;
+    text-align: center;
+    justify-content: center;
   }
 }
 </style>

@@ -15,10 +15,10 @@ rm -rf ${WORK}
 mkdir -p ${WORK}
 cd ${WORK}
 
-wget --progress=dot:giga \
+wget -q \
   https://github.com/amnezia-vpn/amneziawg-go/archive/refs/tags/v${VERSION}.tar.gz \
   -O src.tar.gz
-tar xf src.tar.gz --strip-components=1
+tar xf src.tar.gz --strip-components=1 --no-same-owner --no-same-permissions
 
 CGO_ENABLED=0 go build \
   -trimpath \
