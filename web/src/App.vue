@@ -17,6 +17,9 @@ const route = useRoute()
         <el-menu-item index="dashboard" :route="{ name: 'dashboard' }">Dashboard</el-menu-item>
         <el-menu-item index="peers" :route="{ name: 'peers' }">Peers</el-menu-item>
       </el-menu>
+      <a href="/auth/logout" class="logout-link">
+        <el-button text>Logout</el-button>
+      </a>
     </el-header>
     <el-main class="app-main">
       <router-view />
@@ -73,6 +76,10 @@ body {
   border-bottom: none;
   min-width: 0;
 }
+.logout-link {
+  text-decoration: none;
+  flex-shrink: 0;
+}
 .app-main {
   padding: 16px;
 }
@@ -84,18 +91,24 @@ body {
 
 @media (max-width: 768px) {
   .app-header {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 0;
     padding: 8px 12px;
   }
   .app-title {
     padding: 4px 4px 8px;
+    flex: 1;
+  }
+  .logout-link {
+    margin-left: auto;
   }
   .app-menu {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    order: 3;
   }
   .app-menu :deep(.el-menu) {
     min-width: max-content;
