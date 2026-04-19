@@ -1,6 +1,3 @@
-// Package config owns the per-install state the backend reads at startup:
-// server keys, obfuscation parameters, listen port, OIDC client secret.
-// All of these are written by the installer; the backend only reads.
 package config
 
 import (
@@ -39,9 +36,6 @@ type Config struct {
 	Obfuscation      Obfuscation
 }
 
-// Load populates the receiver from files the installer wrote under
-// c.DataDir. Caller constructs the Config with DataDir set, then calls
-// Load once at startup.
 func (c *Config) Load() error {
 	priv, err := readTrim(filepath.Join(c.DataDir, "server.key"))
 	if err != nil {
@@ -73,9 +67,6 @@ func (c *Config) Load() error {
 		return fmt.Errorf("parse obfuscation.json: %w", err)
 	}
 
-	// OIDC values are templated into config/oidc.env by the installer
-	// (KEY="VALUE" lines). Reading a flat env file keeps the backend
-	// free of a golib dependency for startup.
 	oidc, err := loadKV(filepath.Join(c.DataDir, "config", "oidc.env"))
 	if err != nil {
 		return fmt.Errorf("oidc.env: %w", err)

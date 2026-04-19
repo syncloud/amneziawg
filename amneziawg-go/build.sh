@@ -1,10 +1,5 @@
 #!/bin/sh -ex
 
-# Build the userspace amneziawg-go data plane.
-# Usage: ./amneziawg-go/build.sh <version>
-# Version is pinned in the repo's .drone.jsonnet so bumps are visible
-# as CI config diffs.
-
 if [ -z "$1" ]; then
   echo "usage: $0 <version>" >&2
   exit 1

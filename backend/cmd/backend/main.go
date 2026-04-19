@@ -20,8 +20,6 @@ import (
 	"backend/status"
 )
 
-// Snap layout — stable contract with the installer, never varies at
-// runtime, so we hardcode rather than exposing as flags.
 const (
 	app          = "amneziawg"
 	appDir       = "/snap/" + app + "/current"
@@ -35,9 +33,7 @@ const (
 	awgQuickBin  = appDir + "/amneziawg-tools/bin/awg-quick"
 	serverIface  = "awg0"
 	serverSubnet = "10.9.0.0/24"
-	// Only members of this Authelia group can access the app — matches
-	// the paperless convention (PAPERLESS_SOCIALACCOUNT_ADMIN_GROUP).
-	adminGroup = "syncloud"
+	adminGroup   = "syncloud"
 )
 
 var serverConfPath = filepath.Join(dataDir, "config", serverIface+".conf")

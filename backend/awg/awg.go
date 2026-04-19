@@ -1,5 +1,3 @@
-// Package awg wraps the bundled awg CLI for keypair generation, live
-// status queries, and hot-applying peer changes via awg syncconf.
 package awg
 
 import (
@@ -10,13 +8,10 @@ import (
 )
 
 type Client struct {
-	Binary    string // path to the awg binary
-	Interface string // e.g. "awg0"
+	Binary    string
+	Interface string
 }
 
-// GenerateKeypair returns (privateKey, publicKey) for a fresh client.
-// We shell out to awg genkey / awg pubkey rather than re-implementing
-// Curve25519 — the upstream binary is the source of truth.
 func (c *Client) GenerateKeypair() (string, string, error) {
 	priv, err := run(c.Binary, "genkey")
 	if err != nil {
@@ -38,16 +33,14 @@ type PeerStatus struct {
 	PublicKey       string `json:"public_key"`
 	Endpoint        string `json:"endpoint"`
 	AllowedIPs      string `json:"allowed_ips"`
-	LatestHandshake int64  `json:"latest_handshake"` // unix seconds
+	LatestHandshake int64  `json:"latest_handshake"`
 	RxBytes         int64  `json:"rx_bytes"`
 	TxBytes         int64  `json:"tx_bytes"`
 }
 
-// Dump parses `awg show <iface> dump`. First line is the interface
-// itself; remaining lines are peers. Columns are tab-separated.
-//
-// Peer line layout: <pub_key> <preshared_key> <endpoint> <allowed_ips>
-//   <latest_handshake> <rx_bytes> <tx_bytes> <persistent_keepalive>
+// awg show <iface> dump: first line is the interface, each subsequent
+// line is a peer with tab-separated columns:
+//   <pub> <preshared> <endpoint> <allowed_ips> <handshake> <rx> <tx> <keepalive>
 func (c *Client) Dump() ([]PeerStatus, error) {
 	out, err := run(c.Binary, "show", c.Interface, "dump")
 	if err != nil {
@@ -59,7 +52,7 @@ func (c *Client) Dump() ([]PeerStatus, error) {
 		return nil, nil
 	}
 	var peers []PeerStatus
-	for _, line := range lines[1:] { // skip interface line
+	for _, line := range lines[1:] {
 		fields := strings.Split(line, "\t")
 		if len(fields) < 8 {
 			continue
@@ -77,8 +70,6 @@ func (c *Client) Dump() ([]PeerStatus, error) {
 	return peers, nil
 }
 
-// SyncConf hot-applies the conf file to a running interface without
-// dropping peers (equivalent of: awg syncconf <iface> <(awg-quick strip conf)).
 func (c *Client) SyncConf(stripped string) error {
 	cmd := exec.Command(c.Binary, "syncconf", c.Interface, "/dev/stdin")
 	cmd.Stdin = strings.NewReader(stripped)

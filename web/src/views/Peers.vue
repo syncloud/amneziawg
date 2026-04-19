@@ -72,8 +72,6 @@ onMounted(refresh)
     <el-button type="primary" @click="addDialogOpen = true">Add peer</el-button>
   </div>
 
-  <!-- Desktop: data table. Hidden on narrow viewports where the action
-       column would push the table past the viewport. -->
   <div class="desktop-only">
     <el-table :data="peers" v-loading="loading" empty-text="No peers yet">
       <el-table-column prop="name" label="Name" />
@@ -89,7 +87,6 @@ onMounted(refresh)
     </el-table>
   </div>
 
-  <!-- Mobile: one card per peer, full-width buttons. -->
   <div class="mobile-only" v-loading="loading">
     <el-empty v-if="!loading && peers.length === 0" description="No peers yet" />
     <el-card v-for="peer in peers" :key="peer.id" class="peer-card" shadow="never">

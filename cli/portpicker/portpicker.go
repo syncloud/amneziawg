@@ -1,10 +1,3 @@
-// Package portpicker picks a random high UDP port that is currently free
-// on the host. Chosen at install time and persisted — other Syncloud
-// apps may have grabbed a given port, so a static default is fragile.
-//
-// Port 51820 (the vanilla WireGuard default) is deliberately excluded:
-// DPI systems flag it, and a Syncloud device behind TSPU/GFW should
-// never use it.
 package portpicker
 
 import (
@@ -15,14 +8,12 @@ import (
 )
 
 const (
-	minPort          = 10000
-	maxPort          = 65535
-	excludedWGPort   = 51820
-	maxAttempts      = 100
+	minPort        = 10000
+	maxPort        = 65535
+	excludedWGPort = 51820 // vanilla WireGuard default — DPI-flagged
+	maxAttempts    = 100
 )
 
-// Pick returns a free random UDP port in [minPort, maxPort], excluding
-// the vanilla WireGuard default.
 func Pick() (int, error) {
 	for attempt := 0; attempt < maxAttempts; attempt++ {
 		port, err := randPort()

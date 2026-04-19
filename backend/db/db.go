@@ -1,6 +1,3 @@
-// Package db owns the SQLite schema and queries for peer state and
-// persisted settings. Uses modernc.org/sqlite (pure Go) so the whole
-// backend compiles with CGO_ENABLED=0.
 package db
 
 import (
@@ -120,8 +117,6 @@ func (db *DB) DeletePeer(id int64) error {
 	return nil
 }
 
-// UsedAddresses returns the set of /32 addresses already assigned to a
-// peer, so the service layer can pick the next free one.
 func (db *DB) UsedAddresses() (map[string]bool, error) {
 	rows, err := db.Query(`SELECT address_v4 FROM peers`)
 	if err != nil {

@@ -1,6 +1,3 @@
-// Package status exposes live info about the running awg interface —
-// peer handshake times, RX/TX bytes, server listen port for the
-// "forward this on your router" reminder in the dashboard.
 package status
 
 import (

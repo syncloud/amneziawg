@@ -11,6 +11,4 @@ trap "$SNAP/amneziawg-tools/bin/awg-quick down $CONF" INT TERM EXIT
 
 $SNAP/amneziawg-tools/bin/awg-quick up $CONF
 
-# awg-quick brings up the interface then returns; keep the unit alive so
-# the tun device and routes persist for the lifetime of the service.
 while true; do sleep 60; done

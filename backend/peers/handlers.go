@@ -7,8 +7,6 @@ import (
 	"strconv"
 )
 
-// RegisterRoutes mounts peer endpoints. Uses Go 1.22+ ServeMux method +
-// path-variable syntax — no third-party router dependency.
 func (s *Service) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/peers", s.handleList)
 	mux.HandleFunc("POST /api/peers", s.handleCreate)

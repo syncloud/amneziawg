@@ -10,10 +10,6 @@ local playwright = 'v1.59.1-jammy';
 local browser = 'chrome';
 local dind = '20.10.21-dind';
 
-// Syncloud platform image tags. Bookworm tracks the latest release on
-// Docker Hub at the time of editing — bump this when a newer tag ships
-// at https://hub.docker.com/r/syncloud/platform-bookworm-amd64/tags.
-// Buster stays pinned because newer platform builds dropped buster.
 local platform = '26.04.3';
 local platform_buster = '25.02';
 
@@ -22,8 +18,6 @@ local distros = ['bookworm', 'buster'];
 
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
 
-// Upstream versions — pin here so bumps show up as a CI diff. Build
-// scripts accept the version as a positional argument.
 local amneziawg_go_version = '1.1.0';
 local amneziawg_tools_version = '1.0.20250706';
 
@@ -186,10 +180,6 @@ local build(arch, test_ui) = [{
   ],
 }];
 
-// armhf (arm/v7) is attempted as a third target because older devices
-// still run on it. If the arm pipeline starts failing consistently
-// (e.g. upstream drops arm/v7 support), drop this line — amd64 + arm64
-// coverage is the non-negotiable minimum.
 build('amd64', true) +
 build('arm64', false) +
 build('arm', false)

@@ -1,15 +1,3 @@
-// Package obfuscation generates the per-install AmneziaWG obfuscation
-// parameters (Jc, Jmin, Jmax, S1, S2, H1..H4).
-//
-// Constraints enforced (from amneziawg-linux-kernel-module docs):
-//   - Jc     ∈ [3, 10]
-//   - Jmin   = 50
-//   - Jmax   = 1000
-//   - S1, S2 ∈ [15, 150], and S1+56 != S2
-//   - H1..H4 are distinct uint32 values ≥ 5 and not in {1, 2, 3, 4}
-//
-// Fresh values are generated per install so every device has a unique
-// DPI fingerprint.
 package obfuscation
 
 import (
@@ -48,7 +36,7 @@ func Generate() (Params, error) {
 	}
 	p.S1 = s1
 
-	// S2 ≠ S1 + 56 (AmneziaWG requirement)
+	// AmneziaWG: S2 must not equal S1+56.
 	for {
 		s2, err := randIntRange(15, 150)
 		if err != nil {
@@ -60,7 +48,7 @@ func Generate() (Params, error) {
 		}
 	}
 
-	// H1..H4: distinct uint32 ≥ 5, not in {1,2,3,4}
+	// AmneziaWG: H1..H4 must be distinct and not in {1,2,3,4} (reserved WG message types).
 	seen := map[uint32]bool{1: true, 2: true, 3: true, 4: true}
 	var hs [4]uint32
 	for i := 0; i < 4; i++ {
@@ -81,7 +69,6 @@ func Generate() (Params, error) {
 	return p, nil
 }
 
-// randIntRange returns a uniformly random int in [lo, hi] inclusive.
 func randIntRange(lo, hi int) (int, error) {
 	if hi < lo {
 		return 0, fmt.Errorf("range hi=%d < lo=%d", hi, lo)
@@ -95,7 +82,6 @@ func randIntRange(lo, hi int) (int, error) {
 	return lo + int(n), nil
 }
 
-// randUint32GE returns a uniformly random uint32 ≥ min.
 func randUint32GE(min uint32) (uint32, error) {
 	var buf [4]byte
 	for {

@@ -1,11 +1,8 @@
-// Thin fetch wrappers. OIDC session cookie is HttpOnly — browser sends
-// it automatically, no token handling here.
-
 export type Peer = {
   id: number
   name: string
   public_key: string
-  private_key?: string // only present on the immediate create response
+  private_key?: string
   address_v4: string
   created_at: string
 }

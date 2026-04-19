@@ -82,10 +82,6 @@ body {
   }
 }
 
-/* Mobile: stack title above menu, make the menu swipe-scrollable so
-   all four items are reachable on narrow viewports. Overriding
-   Element Plus internals with :deep() because el-menu's own overflow
-   handling hides extras rather than letting them scroll. */
 @media (max-width: 768px) {
   .app-header {
     flex-direction: column;

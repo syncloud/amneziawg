@@ -13,11 +13,6 @@ import (
 	"backend/db"
 )
 
-// Service owns peer lifecycle: key generation, address allocation,
-// client-config rendering, hot-apply to the running awg interface.
-//
-// All templates are loaded at construction from the config dir; the
-// service never reads template strings from Go source.
 type Service struct {
 	DB     *db.DB
 	AWG    *awg.Client
@@ -26,16 +21,9 @@ type Service struct {
 	ServerTemplate *template.Template
 	ClientTemplate *template.Template
 
-	// ServerConfPath is where the rendered awg0.conf lives — rewritten
-	// on every peer mutation so a daemon restart is also safe.
 	ServerConfPath string
-
-	// AwgQuickBinary is the path to the bundled awg-quick; used to
-	// `strip` the server conf before feeding it to `awg syncconf`.
 	AwgQuickBinary string
-
-	// Subnet is the pool /24 — server is .1, peers start at .2.
-	Subnet string
+	Subnet         string
 }
 
 func (s *Service) List() ([]db.Peer, error) {
@@ -75,7 +63,9 @@ func (s *Service) Create(req CreateRequest) (db.Peer, error) {
 	if err != nil {
 		return db.Peer{}, err
 	}
-	peer.PrivateKey = priv // carry in-memory for the immediate config download
+	// Carried in-memory only: the private key is delivered exactly once
+	// in the create response, then dropped from the DB row.
+	peer.PrivateKey = priv
 
 	if err := s.syncServerConf(); err != nil {
 		return peer, fmt.Errorf("sync awg conf: %w", err)
@@ -90,9 +80,6 @@ func (s *Service) Delete(id int64) error {
 	return s.syncServerConf()
 }
 
-// ClientConfig renders the .conf file the user imports into their
-// Amnezia client. Includes the private key once — after this moment,
-// the backend never returns the private key again.
 func (s *Service) ClientConfig(id int64) (string, error) {
 	peer, err := s.DB.GetPeer(id)
 	if err != nil {
@@ -127,7 +114,6 @@ func (s *Service) QRCode(id int64) ([]byte, error) {
 	return qrcode.Encode(conf, qrcode.Medium, 512)
 }
 
-// nextFreeAddress returns 10.9.0.N/32 for the smallest free N ≥ 2.
 func (s *Service) nextFreeAddress() (string, error) {
 	used, err := s.DB.UsedAddresses()
 	if err != nil {

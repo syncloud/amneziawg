@@ -1,13 +1,3 @@
-// Package auth handles OIDC login against the platform's Authelia
-// (paperless pattern) and manages the resulting session cookie.
-//
-// Flow:
-//   GET  /auth/login     → redirect to Authelia authorize endpoint
-//   GET  /auth/callback  → exchange code, validate id_token, set session cookie
-//   GET  /auth/logout    → clear cookie
-//
-// Session cookie is a short signed token — no server-side session store,
-// the id_token's claims are copied into a JWT we sign ourselves.
 package auth
 
 import (
@@ -32,12 +22,9 @@ type OIDC struct {
 	ClientID     string
 	ClientSecret string
 	RedirectURL  string
+	AdminGroup   string
 	CookieSecret []byte
-	// AdminGroup is the Authelia group a user must belong to for access.
-	// "syncloud" is the convention across Syncloud apps — see
-	// ../paperless/config/paperless.conf (PAPERLESS_SOCIALACCOUNT_ADMIN_GROUP).
-	AdminGroup string
-	Logger     *zap.Logger
+	Logger       *zap.Logger
 
 	provider     *oidc.Provider
 	verifier     *oidc.IDTokenVerifier
@@ -56,18 +43,16 @@ func (o *OIDC) Init(ctx context.Context) error {
 		ClientSecret: o.ClientSecret,
 		RedirectURL:  o.RedirectURL,
 		Endpoint:     provider.Endpoint(),
-		// "groups" is required so we can enforce admin-only access —
-		// Authelia returns the user's group memberships in the id_token.
-		Scopes: []string{oidc.ScopeOpenID, "profile", "email", "groups"},
+		Scopes:       []string{oidc.ScopeOpenID, "profile", "email", "groups"},
 	}
 	return nil
 }
 
 const (
-	stateCookie   = "amneziawg_oidc_state"
+	stateCookie    = "amneziawg_oidc_state"
 	verifierCookie = "amneziawg_oidc_verifier"
-	sessionCookie = "amneziawg_session"
-	sessionTTL    = 12 * time.Hour
+	sessionCookie  = "amneziawg_session"
+	sessionTTL     = 12 * time.Hour
 )
 
 func (o *OIDC) Login(w http.ResponseWriter, r *http.Request) {
@@ -172,9 +157,6 @@ func (o *OIDC) Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-// Middleware enforces a valid session cookie on protected routes.
-// Unauthenticated API requests get a 401; unauthenticated page requests
-// get bounced to /auth/login.
 func (o *OIDC) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ck, err := r.Cookie(sessionCookie)

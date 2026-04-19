@@ -7,9 +7,6 @@ import (
 	"os/exec"
 )
 
-// serverTemplateContext mirrors the field shape the installer passes
-// to config/awg-server.conf.tpl — same template is used at install
-// time (with no peers) and at runtime (with the live peer set).
 type serverTemplateContext struct {
 	ServerPrivateKey string
 	ListenPort       int
@@ -31,14 +28,6 @@ type serverPeer struct {
 	AllowedIPs string
 }
 
-// syncServerConf rewrites the server awg0.conf from the current DB
-// state, then hot-applies the peer section via awg syncconf.
-//
-// Strategy:
-//   1. Re-render the full conf from config/awg-server.conf.tpl so a
-//      daemon restart picks up the new peer set.
-//   2. Shell out to awg-quick strip to get the syncconf-compatible
-//      form, then pipe that to awg syncconf.
 func (s *Service) syncServerConf() error {
 	peers, err := s.DB.ListPeers()
 	if err != nil {

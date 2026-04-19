@@ -1,12 +1,3 @@
-// miragejs stub server. Intercepts fetch() in the browser when
-// VITE_STUB is set (see src/main.ts).
-//
-// State is a plain module-level object — every route reads and mutates
-// it, so adding a peer in the UI immediately reflects in the peers
-// list, the dashboard status, and the config/QR endpoints. No mirage
-// Schema/DB abstraction: the whole point is you can read the state
-// inline and reason about it as a JS object.
-
 import { createServer, Response } from 'miragejs'
 import QRCode from 'qrcode'
 import type { Peer, Status } from '@/api'
@@ -88,9 +79,6 @@ function randKey(prefix: string): string {
   return `${prefix}_${Math.random().toString(36).slice(2, 10).toUpperCase()}_STUB====`
 }
 
-// Fake activity: derive the status[] block from the peer list so newly
-// added peers show up on the dashboard with plausible handshake/byte
-// counts.
 function statusPeers(): Status['peers'] {
   return state.peers.map((p, idx) => ({
     public_key: p.public_key,
@@ -98,7 +86,7 @@ function statusPeers(): Status['peers'] {
     allowed_ips: p.address_v4,
     latest_handshake:
       idx === state.peers.length - 1
-        ? Math.floor(Date.now() / 1000) - 30 // newest peer looks active
+        ? Math.floor(Date.now() / 1000) - 30
         : Math.floor(Date.now() / 1000) - (p.id * 120),
     rx_bytes: p.id * 123_456,
     tx_bytes: p.id * 45_678,
@@ -124,8 +112,6 @@ export function makeServer() {
           address_v4: nextFreeAddress(),
           created_at: new Date().toISOString().replace('T', ' ').slice(0, 19),
         }
-        // Persist without the private key (backend drops it after
-        // first delivery), but return it in the response.
         state.peers.push({ ...peer, private_key: '' })
         return peer
       })

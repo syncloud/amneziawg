@@ -18,8 +18,6 @@ import (
 
 const App = "amneziawg"
 
-// Variables is the template context passed to config/*.tpl files by
-// golib/config.Generate.
 type Variables struct {
 	App              string
 	AppDir           string
@@ -34,12 +32,10 @@ type Variables struct {
 	OIDCClientSecret string
 	OIDCRedirectURI  string
 
-	// Server
 	ServerPrivateKey string
 	ServerPublicKey  string
 	ListenPort       int
 
-	// Obfuscation
 	Jc   int
 	Jmin int
 	Jmax int
@@ -50,7 +46,6 @@ type Variables struct {
 	H3   uint32
 	H4   uint32
 
-	// Peers (populated by the backend, not the installer).
 	Peers []Peer
 }
 
@@ -175,10 +170,6 @@ func (i *Installer) UpdateVersion() error {
 	return os.WriteFile(i.currentVersionFile, data, 0644)
 }
 
-// initServerState runs only on first install. Generates the server
-// keypair, obfuscation parameters, and picks the UDP listen port.
-// All values are persisted so subsequent configure runs reuse them —
-// rotating any of these would force every client to re-enroll.
 func (i *Installer) initServerState() error {
 	for _, d := range []string{i.dataDir, i.configDir, path.Join(i.dataDir, "nginx"), path.Join(i.commonDir, "db")} {
 		if err := linux.CreateMissingDirs(d); err != nil {
@@ -222,9 +213,6 @@ func (i *Installer) initServerState() error {
 	return nil
 }
 
-// generateServerKeypair shells out to `awg genkey` / `awg pubkey` from
-// the bundled amneziawg-tools. We don't reimplement Curve25519 — the
-// upstream binary is the source of truth.
 func (i *Installer) generateServerKeypair() (string, string, error) {
 	awg := path.Join(i.appDir, "amneziawg-tools", "bin", "awg")
 	privOut, err := i.executor.Run(awg, "genkey")
@@ -276,14 +264,11 @@ func (i *Installer) UpdateConfigs() error {
 		return err
 	}
 
-	// Register as an OIDC client with the platform's Authelia on every
-	// configure so redirect URI / client_secret stay in sync. Pattern
-	// cribbed from ../paperless/cli/installer/installer.go.
 	oidcRedirect := "/auth/callback"
 	oidcSecret, err := i.platformClient.RegisterOIDCClient(
 		App,
 		oidcRedirect,
-		true, // require PKCE
+		true,
 		"client_secret_basic",
 	)
 	if err != nil {
