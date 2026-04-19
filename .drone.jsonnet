@@ -42,16 +42,27 @@ local build(arch, test_ui) = [{
       image: 'nginx:' + nginx,
       commands: ['./nginx/build.sh'],
     },
+  ] + [
     {
-      name: 'nginx test',
-      image: platform_image(distro_default, arch),
+      name: 'nginx test ' + distro,
+      image: platform_image(distro, arch),
       commands: ['./nginx/test.sh'],
-    },
+    }
+    for distro in distros
+  ] + [
     {
       name: 'amneziawg-go',
       image: 'golang:' + go,
       commands: ['./amneziawg-go/build.sh ' + amneziawg_go_version],
     },
+  ] + [
+    {
+      name: 'amneziawg-go test ' + distro,
+      image: platform_image(distro, arch),
+      commands: ['./amneziawg-go/test.sh'],
+    }
+    for distro in distros
+  ] + [
     {
       name: 'amneziawg-tools',
       image: 'alpine:' + alpine,
@@ -60,6 +71,14 @@ local build(arch, test_ui) = [{
         './amneziawg-tools/build.sh ' + amneziawg_tools_version,
       ],
     },
+  ] + [
+    {
+      name: 'amneziawg-tools test ' + distro,
+      image: platform_image(distro, arch),
+      commands: ['./amneziawg-tools/test.sh'],
+    }
+    for distro in distros
+  ] + [
     {
       name: 'cli',
       image: 'golang:' + go,
