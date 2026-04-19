@@ -7,6 +7,7 @@ package.name
 .drone.yaml
 
 web/node_modules/
+.claude/
 # unplugin-auto-import / unplugin-vue-components regenerate these on dev.
 web/auto-imports.d.ts
 web/components.d.ts
