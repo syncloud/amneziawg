@@ -33,7 +33,11 @@ type OIDC struct {
 	ClientSecret string
 	RedirectURL  string
 	CookieSecret []byte
-	Logger       *zap.Logger
+	// AdminGroup is the Authelia group a user must belong to for access.
+	// "syncloud" is the convention across Syncloud apps — see
+	// ../paperless/config/paperless.conf (PAPERLESS_SOCIALACCOUNT_ADMIN_GROUP).
+	AdminGroup string
+	Logger     *zap.Logger
 
 	provider     *oidc.Provider
 	verifier     *oidc.IDTokenVerifier
@@ -52,7 +56,9 @@ func (o *OIDC) Init(ctx context.Context) error {
 		ClientSecret: o.ClientSecret,
 		RedirectURL:  o.RedirectURL,
 		Endpoint:     provider.Endpoint(),
-		Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
+		// "groups" is required so we can enforce admin-only access —
+		// Authelia returns the user's group memberships in the id_token.
+		Scopes: []string{oidc.ScopeOpenID, "profile", "email", "groups"},
 	}
 	return nil
 }
@@ -128,11 +134,23 @@ func (o *OIDC) Callback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var claims struct {
-		Sub   string `json:"sub"`
-		Email string `json:"email"`
+		Sub    string   `json:"sub"`
+		Email  string   `json:"email"`
+		Groups []string `json:"groups"`
 	}
 	if err := idToken.Claims(&claims); err != nil {
 		http.Error(w, "claims", http.StatusBadGateway)
+		return
+	}
+
+	if !contains(claims.Groups, o.AdminGroup) {
+		o.Logger.Warn("access denied — user not in admin group",
+			zap.String("sub", claims.Sub),
+			zap.String("email", claims.Email),
+			zap.Strings("groups", claims.Groups),
+			zap.String("required", o.AdminGroup),
+		)
+		http.Error(w, "admin access only", http.StatusForbidden)
 		return
 	}
 
@@ -247,4 +265,13 @@ func randBase64(n int) (string, error) {
 func pkceChallenge(verifier string) string {
 	h := sha256.Sum256([]byte(verifier))
 	return base64.RawURLEncoding.EncodeToString(h[:])
+}
+
+func contains(haystack []string, needle string) bool {
+	for _, s := range haystack {
+		if s == needle {
+			return true
+		}
+	}
+	return false
 }

@@ -16,8 +16,6 @@ const route = useRoute()
       >
         <el-menu-item index="dashboard" :route="{ name: 'dashboard' }">Dashboard</el-menu-item>
         <el-menu-item index="peers" :route="{ name: 'peers' }">Peers</el-menu-item>
-        <el-menu-item index="settings" :route="{ name: 'settings' }">Settings</el-menu-item>
-        <el-menu-item index="logs" :route="{ name: 'logs' }">Logs</el-menu-item>
       </el-menu>
     </el-header>
     <el-main class="app-main">

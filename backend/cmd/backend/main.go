@@ -35,6 +35,9 @@ const (
 	awgQuickBin  = appDir + "/amneziawg-tools/bin/awg-quick"
 	serverIface  = "awg0"
 	serverSubnet = "10.9.0.0/24"
+	// Only members of this Authelia group can access the app — matches
+	// the paperless convention (PAPERLESS_SOCIALACCOUNT_ADMIN_GROUP).
+	adminGroup = "syncloud"
 )
 
 var serverConfPath = filepath.Join(dataDir, "config", serverIface+".conf")
@@ -103,6 +106,7 @@ func run(logger *zap.Logger) error {
 		ClientID:     cfg.OIDCClientID,
 		ClientSecret: cfg.OIDCClientSecret,
 		RedirectURL:  cfg.OIDCRedirectURI,
+		AdminGroup:   adminGroup,
 		CookieSecret: cookieSecret,
 		Logger:       logger,
 	}
