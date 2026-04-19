@@ -81,5 +81,6 @@ onMounted(refresh)
 .stat-value {
   font-size: 24px;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 </style>
