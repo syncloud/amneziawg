@@ -21,8 +21,8 @@ wget -q \
 tar xf src.tar.gz --strip-components=1 --no-same-owner --no-same-permissions
 
 cd src
-make LDFLAGS='-static -s' awg
-cp awg ${BUILD_DIR}/bin/awg
+make LDFLAGS='-static -s' wg
+cp wg ${BUILD_DIR}/bin/awg
 
 cp wg-quick/linux.bash ${BUILD_DIR}/bin/awg-quick
 chmod +x ${BUILD_DIR}/bin/awg-quick
