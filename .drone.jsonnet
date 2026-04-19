@@ -18,8 +18,8 @@ local distros = ['bookworm', 'buster'];
 
 local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
 
-local amneziawg_go_version = '1.1.0';
-local amneziawg_tools_version = '1.0.20250706';
+local amneziawg_go_version = '0.2.17';
+local amneziawg_tools_version = '1.0.20260223';
 
 local platform_image(distro, arch) =
   'syncloud/platform-' + distro + '-' + arch + ':' +
