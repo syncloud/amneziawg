@@ -3,6 +3,9 @@ artifact/
 *.snap
 package.name
 
+# .drone.yaml is generated from .drone.jsonnet — CI uses the jsonnet.
+.drone.yaml
+
 web/node_modules/
 
 .DS_Store
