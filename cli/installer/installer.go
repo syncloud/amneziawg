@@ -27,9 +27,12 @@ type Variables struct {
 	CommonDir        string
 	AppUrl           string
 	AppDomain        string
+	AuthUrl          string
 	Domain           string
 	Secret           string
+	OIDCClientID     string
 	OIDCClientSecret string
+	OIDCRedirectURI  string
 
 	// Server
 	ServerPrivateKey string
@@ -259,6 +262,10 @@ func (i *Installer) UpdateConfigs() error {
 	if err != nil {
 		return err
 	}
+	authUrl, err := i.platformClient.GetAppUrl("auth")
+	if err != nil {
+		return err
+	}
 	domain, found := strings.CutPrefix(appDomain, App+".")
 	if !found {
 		return fmt.Errorf("%s is not a prefix of %s", App, appDomain)
@@ -272,9 +279,10 @@ func (i *Installer) UpdateConfigs() error {
 	// Register as an OIDC client with the platform's Authelia on every
 	// configure so redirect URI / client_secret stay in sync. Pattern
 	// cribbed from ../paperless/cli/installer/installer.go.
+	oidcRedirect := "/auth/callback"
 	oidcSecret, err := i.platformClient.RegisterOIDCClient(
 		App,
-		"/auth/callback",
+		oidcRedirect,
 		true, // require PKCE
 		"client_secret_basic",
 	)
@@ -310,9 +318,12 @@ func (i *Installer) UpdateConfigs() error {
 		CommonDir:        i.commonDir,
 		AppUrl:           appUrl,
 		AppDomain:        appDomain,
+		AuthUrl:          authUrl,
 		Domain:           domain,
 		Secret:           secret,
+		OIDCClientID:     App,
 		OIDCClientSecret: oidcSecret,
+		OIDCRedirectURI:  strings.TrimRight(appUrl, "/") + oidcRedirect,
 		ServerPrivateKey: strings.TrimSpace(string(priv)),
 		ServerPublicKey:  strings.TrimSpace(string(pub)),
 		ListenPort:       port,

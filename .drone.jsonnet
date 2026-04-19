@@ -1,6 +1,6 @@
 local name = 'amneziawg';
 
-local go = '1.25';
+local go = '1.26';
 local node = '20.18.1';
 local nginx = '1.29.3-alpine3.22';
 local alpine = '3.22.2';
