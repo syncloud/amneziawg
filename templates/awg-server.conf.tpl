@@ -13,8 +13,8 @@ H2 = {{ .H2 }}
 H3 = {{ .H3 }}
 H4 = {{ .H4 }}
 
-PostUp   = /snap/amneziawg/current/bin/iptables -A FORWARD -i %i -j ACCEPT; /snap/amneziawg/current/bin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-PostDown = /snap/amneziawg/current/bin/iptables -D FORWARD -i %i -j ACCEPT; /snap/amneziawg/current/bin/iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+PostUp   = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
 
 {{ range .Peers }}
 [Peer]
