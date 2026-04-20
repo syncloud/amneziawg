@@ -47,6 +47,11 @@ def test_activate_device(device):
     assert response.status_code == 200, response.text
 
 
+def test_install_ca_cert(device):
+    device.run_ssh('cp /var/snap/platform/current/syncloud.ca.crt /usr/local/share/ca-certificates/syncloud.crt')
+    device.run_ssh('update-ca-certificates')
+
+
 def test_install(app_archive_path, domain, device_session, device_password):
     local_install(domain, device_password, app_archive_path)
     wait_for_installer(device_session, domain, attempts=10)

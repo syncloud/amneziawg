@@ -5,7 +5,6 @@ import (
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
-	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -30,18 +29,9 @@ type OIDC struct {
 	provider     *oidc.Provider
 	verifier     *oidc.IDTokenVerifier
 	oauth2Config oauth2.Config
-	httpClient   *http.Client
 }
 
 func (o *OIDC) Init(ctx context.Context) error {
-	// Syncloud platform's internal Authelia uses a self-signed cert
-	// from the platform CA. The device-local call never leaves the
-	// host network; skipping verification is the Syncloud convention.
-	o.httpClient = &http.Client{
-		Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
-	}
-	ctx = oidc.ClientContext(ctx, o.httpClient)
-
 	provider, err := oidc.NewProvider(ctx, o.IssuerURL)
 	if err != nil {
 		return fmt.Errorf("oidc provider discovery: %w", err)
@@ -105,7 +95,7 @@ func (o *OIDC) Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx := oidc.ClientContext(r.Context(), o.httpClient)
+	ctx := r.Context()
 	token, err := o.oauth2Config.Exchange(
 		ctx, r.URL.Query().Get("code"),
 		oauth2.SetAuthURLParam("code_verifier", verifierCk.Value),
