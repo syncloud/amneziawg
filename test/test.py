@@ -52,6 +52,13 @@ def test_install(app_archive_path, domain, device_session, device_password):
     wait_for_installer(device_session, domain, attempts=10)
 
 
+def test_services(device):
+    device.run_ssh('snap services amneziawg', throw=False)
+    device.run_ssh('snap logs amneziawg -n 200', throw=False)
+    device.run_ssh('ls -la /var/snap/amneziawg/current/ /var/snap/amneziawg/common/ /snap/amneziawg/current/', throw=False)
+    device.run_ssh('cat /var/snap/amneziawg/current/config/awg0.conf', throw=False)
+
+
 @pytest.mark.flaky(retries=10, delay=5)
 def test_visible_through_platform(app_domain):
     response = requests.get('https://{0}'.format(app_domain), verify=False, allow_redirects=False)
