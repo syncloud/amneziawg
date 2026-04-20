@@ -19,6 +19,7 @@ mkdir -p ${SNAP_DIR}/meta
 
 cp -r ${DIR}/bin ${SNAP_DIR}
 cp -r ${DIR}/config ${SNAP_DIR}
+cp -r ${DIR}/templates ${SNAP_DIR}
 cp ${DIR}/snap.yaml ${SNAP_DIR}/meta
 
 du -d10 -h $SNAP_DIR | sort -h | tail -100

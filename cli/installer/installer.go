@@ -1,10 +1,12 @@
 package installer
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"path"
 	"strings"
+	"text/template"
 
 	"github.com/google/uuid"
 	"github.com/syncloud/golib/config"
@@ -323,11 +325,27 @@ func (i *Installer) UpdateConfigs() error {
 		H4:               obfParams.H4,
 	}
 
-	return config.Generate(
-		path.Join(i.appDir, "config"),
-		i.configDir,
-		variables,
-	)
+	if err := config.Generate(path.Join(i.appDir, "config"), i.configDir, variables); err != nil {
+		return err
+	}
+	return i.renderServerConf(variables)
+}
+
+func (i *Installer) renderServerConf(variables Variables) error {
+	tplPath := path.Join(i.appDir, "templates", "awg-server.conf.tpl")
+	tpl, err := template.ParseFiles(tplPath)
+	if err != nil {
+		return fmt.Errorf("parse %s: %w", tplPath, err)
+	}
+	var buf bytes.Buffer
+	if err := tpl.Execute(&buf, variables); err != nil {
+		return fmt.Errorf("render %s: %w", tplPath, err)
+	}
+	out := path.Join(i.configDir, "awg0.conf")
+	if err := os.WriteFile(out, buf.Bytes(), 0600); err != nil {
+		return fmt.Errorf("write %s: %w", out, err)
+	}
+	return nil
 }
 
 func (i *Installer) BackupPreStop() error {

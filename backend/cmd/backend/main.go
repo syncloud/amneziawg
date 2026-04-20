@@ -26,6 +26,7 @@ const (
 	dataDir      = "/var/snap/" + app + "/current"
 	commonDir    = "/var/snap/" + app + "/common"
 	configDir    = appDir + "/config"
+	templatesDir = appDir + "/templates"
 	backendSock  = dataDir + "/backend.sock"
 	dbPath       = commonDir + "/db/data.db"
 	secretPath   = dataDir + "/.secret"
@@ -70,11 +71,11 @@ func run(logger *zap.Logger) error {
 
 	awgClient := &awg.Client{Binary: awgBin, Interface: serverIface}
 
-	serverTpl, err := template.ParseFiles(filepath.Join(configDir, "awg-server.conf.tpl"))
+	serverTpl, err := template.ParseFiles(filepath.Join(templatesDir, "awg-server.conf.tpl"))
 	if err != nil {
 		return fmt.Errorf("parse server template: %w", err)
 	}
-	clientTpl, err := template.ParseFiles(filepath.Join(configDir, "awg-client.conf.tpl"))
+	clientTpl, err := template.ParseFiles(filepath.Join(templatesDir, "awg-client.conf.tpl"))
 	if err != nil {
 		return fmt.Errorf("parse client template: %w", err)
 	}
