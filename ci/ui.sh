@@ -1,8 +1,5 @@
 #!/bin/sh -ex
 
-# Playwright UI test runner. Invoked by drone.
-# Usage: ./ci/ui.sh <desktop|mobile> <app> <distro> <build-number>
-
 PROJECT=$1
 APP=$2
 DISTRO=$3

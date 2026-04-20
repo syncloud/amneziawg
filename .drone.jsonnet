@@ -115,6 +115,7 @@ local build(arch, test_ui) = [{
          {
            name: 'test-ui-desktop',
            image: 'mcr.microsoft.com/playwright:' + playwright,
+           environment: { DEVICE_USER: 'user', DEVICE_PASSWORD: 'Password1' },
            commands: [
              './ci/ui.sh desktop ' + name + ' ' + distro_default + ' $DRONE_BUILD_NUMBER',
            ],
@@ -122,6 +123,7 @@ local build(arch, test_ui) = [{
          {
            name: 'test-ui-mobile',
            image: 'mcr.microsoft.com/playwright:' + playwright,
+           environment: { DEVICE_USER: 'user', DEVICE_PASSWORD: 'Password1' },
            commands: [
              './ci/ui.sh mobile ' + name + ' ' + distro_default + ' $DRONE_BUILD_NUMBER',
            ],

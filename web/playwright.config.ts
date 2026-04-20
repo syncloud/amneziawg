@@ -9,11 +9,13 @@ export default defineConfig({
   workers: 1,
   retries: process.env.CI ? 1 : 0,
   reporter: [['html', { open: 'never' }]],
+  globalSetup: require.resolve('./e2e/global-setup'),
   use: {
     baseURL: `https://${app}.${domain}`,
     ignoreHTTPSErrors: true,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
+    storageState: 'e2e/.auth/user.json',
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 960 } } },
