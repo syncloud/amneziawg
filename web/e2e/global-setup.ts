@@ -1,7 +1,7 @@
 import { chromium, type FullConfig } from '@playwright/test'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
-import { credsFromEnv, loginOidc, openApp } from './helpers/syncloud'
+import { acceptConsent, credsFromEnv, loginOidc, openApp } from './helpers/syncloud'
 
 const storageStatePath = 'e2e/.auth/user.json'
 
@@ -20,6 +20,9 @@ export default async function globalSetup(config: FullConfig): Promise<void> {
     await page.waitForURL(/^https:\/\/auth\./, { timeout: 30_000 })
     console.log('global-setup: at auth page, url=', page.url())
     await loginOidc(page, credsFromEnv())
+    await page.waitForURL(/\/consent\//, { timeout: 30_000 })
+    console.log('global-setup: at consent page, url=', page.url())
+    await acceptConsent(page)
     await page.waitForURL((url) => url.origin === new URL(baseURL).origin, { timeout: 30_000 })
     await context.storageState({ path: storageStatePath })
   } catch (err) {

@@ -23,3 +23,7 @@ export async function loginOidc(page: Page, creds: SyncloudCreds): Promise<void>
   await page.locator('#password-textfield').fill(creds.password)
   await page.locator('#sign-in-button').click()
 }
+
+export async function acceptConsent(page: Page): Promise<void> {
+  await page.locator('#accept-button').click()
+}
