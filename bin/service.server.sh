@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-export PATH=$SNAP/amneziawg-tools/bin:$SNAP/bin:$PATH
+export PATH=$SNAP/amneziawg-tools/bin:$SNAP/bin:/usr/sbin:/sbin:$PATH
 export WG_QUICK_USERSPACE_IMPLEMENTATION=$SNAP/amneziawg-go/amneziawg-go
 export WG_SUDO=1
 
