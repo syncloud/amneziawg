@@ -9,7 +9,7 @@ export default defineConfig({
   workers: 1,
   retries: process.env.CI ? 1 : 0,
   reporter: [['html', { open: 'never' }]],
-  globalSetup: require.resolve('./e2e/global-setup'),
+  globalSetup: './e2e/global-setup.ts',
   use: {
     baseURL: `https://${app}.${domain}`,
     ignoreHTTPSErrors: true,
