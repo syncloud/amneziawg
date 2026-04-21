@@ -18,3 +18,4 @@ go build -o ${BUILD_DIR}/meta/hooks/configure ./cmd/configure
 go build -o ${BUILD_DIR}/meta/hooks/pre-refresh ./cmd/pre-refresh
 go build -o ${BUILD_DIR}/meta/hooks/post-refresh ./cmd/post-refresh
 go build -o ${BUILD_DIR}/bin/cli ./cmd/cli
+go build -o ${BUILD_DIR}/bin/firewall ./cmd/firewall

@@ -13,9 +13,6 @@ H2 = {{ .H2 }}
 H3 = {{ .H3 }}
 H4 = {{ .H4 }}
 
-PostUp   = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
-
 {{ range .Peers }}
 [Peer]
 # name: {{ .Name }}

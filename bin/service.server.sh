@@ -7,8 +7,13 @@ export WG_SUDO=1
 INTERFACE=awg0
 CONF=$SNAP_DATA/config/${INTERFACE}.conf
 
-trap "$SNAP/amneziawg-tools/bin/awg-quick down $CONF" INT TERM EXIT
+teardown() {
+  $SNAP/amneziawg-tools/bin/awg-quick down $CONF || true
+  $SNAP/bin/firewall teardown || true
+}
+trap teardown INT TERM EXIT
 
+$SNAP/bin/firewall apply
 $SNAP/amneziawg-tools/bin/awg-quick up $CONF
 
 while true; do sleep 60; done
