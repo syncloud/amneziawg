@@ -42,7 +42,9 @@ def test_start(module_setup, device, device_host, app, domain):
     device.run_ssh('mkdir {0}'.format(TMP_DIR))
 
 
+@pytest.mark.flaky(retries=5, delay=10)
 def test_activate_device(device):
+    device.run_ssh('while snap changes | grep -qE "Doing.*auto-refresh"; do sleep 5; done', throw=False)
     response = device.activate_custom()
     assert response.status_code == 200, response.text
 
