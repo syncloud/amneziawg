@@ -17,7 +17,8 @@ export default async function globalSetup(config: FullConfig): Promise<void> {
 
   try {
     await openApp(page)
-    console.log('global-setup: after openApp, url=', page.url())
+    await page.waitForURL(/^https:\/\/auth\./, { timeout: 30_000 })
+    console.log('global-setup: at auth page, url=', page.url())
     await loginOidc(page, credsFromEnv())
     await page.waitForURL((url) => url.origin === new URL(baseURL).origin, { timeout: 30_000 })
     await context.storageState({ path: storageStatePath })

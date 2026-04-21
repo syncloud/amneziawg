@@ -23,6 +23,10 @@ export type Status = {
 }
 
 async function json<T>(r: Response): Promise<T> {
+  if (r.status === 401) {
+    window.location.href = '/auth/login'
+    throw new Error('unauthenticated')
+  }
   if (!r.ok) {
     throw new Error(`${r.status}: ${await r.text()}`)
   }
