@@ -1,5 +1,5 @@
 import { chromium, type FullConfig } from '@playwright/test'
-import { mkdir } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { credsFromEnv, loginOidc, openApp } from './helpers/syncloud'
 
@@ -15,10 +15,19 @@ export default async function globalSetup(config: FullConfig): Promise<void> {
   const context = await browser.newContext({ ignoreHTTPSErrors: true, baseURL })
   const page = await context.newPage()
 
-  await openApp(page)
-  await loginOidc(page, credsFromEnv())
-  await page.waitForURL((url) => url.origin === new URL(baseURL).origin, { timeout: 30_000 })
-
-  await context.storageState({ path: storageStatePath })
-  await browser.close()
+  try {
+    await openApp(page)
+    console.log('global-setup: after openApp, url=', page.url())
+    await loginOidc(page, credsFromEnv())
+    await page.waitForURL((url) => url.origin === new URL(baseURL).origin, { timeout: 30_000 })
+    await context.storageState({ path: storageStatePath })
+  } catch (err) {
+    console.log('global-setup: failed, url=', page.url())
+    await mkdir('test-results', { recursive: true })
+    await page.screenshot({ path: 'test-results/global-setup-fail.png', fullPage: true })
+    await writeFile('test-results/global-setup-fail.html', await page.content())
+    throw err
+  } finally {
+    await browser.close()
+  }
 }
