@@ -135,7 +135,8 @@ func (o *OIDC) Callback(w http.ResponseWriter, r *http.Request) {
 			zap.Strings("groups", claims.Groups),
 			zap.String("required", o.AdminGroup),
 		)
-		http.Error(w, "admin access only", http.StatusForbidden)
+		http.Error(w, fmt.Sprintf("admin access only (user=%s groups=%v required=%s)",
+			claims.Sub, claims.Groups, o.AdminGroup), http.StatusForbidden)
 		return
 	}
 
