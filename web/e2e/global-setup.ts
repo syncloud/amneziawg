@@ -16,14 +16,23 @@ export default async function globalSetup(config: FullConfig): Promise<void> {
   const page = await context.newPage()
 
   try {
+    const appOrigin = new URL(baseURL).origin
+    const backAtApp = (url: URL) =>
+      url.origin === appOrigin && !url.pathname.startsWith('/auth/')
     await openApp(page)
     await page.waitForURL(/^https:\/\/auth\./, { timeout: 30_000 })
     console.log('global-setup: at auth page, url=', page.url())
     await loginOidc(page, credsFromEnv())
-    await page.waitForURL(/\/consent\//, { timeout: 30_000 })
-    console.log('global-setup: at consent page, url=', page.url())
-    await acceptConsent(page)
-    await page.waitForURL((url) => url.origin === new URL(baseURL).origin, { timeout: 30_000 })
+    await page.waitForURL(
+      (url) => url.pathname.includes('/consent/') || backAtApp(url),
+      { timeout: 30_000 }
+    )
+    if (page.url().includes('/consent/')) {
+      console.log('global-setup: at consent page, url=', page.url())
+      await acceptConsent(page)
+      await page.waitForURL(backAtApp, { timeout: 30_000 })
+    }
+    console.log('global-setup: back on app, url=', page.url())
     await context.storageState({ path: storageStatePath })
   } catch (err) {
     console.log('global-setup: failed, url=', page.url())
