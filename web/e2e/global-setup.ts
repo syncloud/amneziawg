@@ -36,9 +36,12 @@ export default async function globalSetup(config: FullConfig): Promise<void> {
     await context.storageState({ path: storageStatePath })
   } catch (err) {
     console.log('global-setup: failed, url=', page.url())
+    const body = await page.content()
+    console.log('global-setup: body (first 2000 chars):')
+    console.log(body.slice(0, 2000))
     await mkdir('test-results', { recursive: true })
     await page.screenshot({ path: 'test-results/global-setup-fail.png', fullPage: true })
-    await writeFile('test-results/global-setup-fail.html', await page.content())
+    await writeFile('test-results/global-setup-fail.html', body)
     throw err
   } finally {
     await browser.close()
