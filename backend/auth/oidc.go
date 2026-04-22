@@ -128,6 +128,26 @@ func (o *OIDC) Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Authelia puts 'groups' in the userinfo response for registered
+	// OIDC clients, not the id_token. Fetch it explicitly when we
+	// didn't already have it in the token claims.
+	if len(claims.Groups) == 0 {
+		userInfo, err := o.provider.UserInfo(ctx, oauth2.StaticTokenSource(token))
+		if err != nil {
+			o.Logger.Error("userinfo", zap.Error(err))
+			http.Error(w, "userinfo failed", http.StatusBadGateway)
+			return
+		}
+		var ui struct {
+			Groups []string `json:"groups"`
+		}
+		if err := userInfo.Claims(&ui); err != nil {
+			http.Error(w, "userinfo claims", http.StatusBadGateway)
+			return
+		}
+		claims.Groups = ui.Groups
+	}
+
 	if !contains(claims.Groups, o.AdminGroup) {
 		o.Logger.Warn("access denied — user not in admin group",
 			zap.String("sub", claims.Sub),
