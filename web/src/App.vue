@@ -8,7 +8,7 @@ const route = useRoute()
     <el-header class="app-header" height="auto">
       <div class="header-top">
         <div class="app-title">AmneziaWG</div>
-        <a href="/auth/logout" class="logout-link">
+        <a href="/auth/logout" class="logout-link" data-testid="logout">
           <el-button text>Logout</el-button>
         </a>
       </div>
@@ -19,8 +19,8 @@ const route = useRoute()
         :ellipsis="false"
         class="app-menu"
       >
-        <el-menu-item index="dashboard" :route="{ name: 'dashboard' }">Dashboard</el-menu-item>
-        <el-menu-item index="peers" :route="{ name: 'peers' }">Peers</el-menu-item>
+        <el-menu-item index="dashboard" :route="{ name: 'dashboard' }" data-testid="nav-dashboard">Dashboard</el-menu-item>
+        <el-menu-item index="peers" :route="{ name: 'peers' }" data-testid="nav-peers">Peers</el-menu-item>
       </el-menu>
     </el-header>
     <el-main class="app-main">

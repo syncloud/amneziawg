@@ -69,7 +69,7 @@ onMounted(refresh)
 <template>
   <div class="peers-header">
     <h2>Peers</h2>
-    <el-button type="primary" @click="addDialogOpen = true">Add peer</el-button>
+    <el-button type="primary" @click="addDialogOpen = true" data-testid="add-peer-button">Add peer</el-button>
   </div>
 
   <div class="desktop-only">
@@ -103,15 +103,15 @@ onMounted(refresh)
     </el-card>
   </div>
 
-  <el-dialog v-model="addDialogOpen" title="Add peer" width="min(400px, 92vw)">
+  <el-dialog v-model="addDialogOpen" title="Add peer" width="min(400px, 92vw)" data-testid="add-peer-dialog">
     <el-form @submit.prevent="create">
       <el-form-item label="Name">
-        <el-input v-model="newPeerName" placeholder="laptop, phone, …" autofocus />
+        <el-input v-model="newPeerName" placeholder="laptop, phone, …" autofocus data-testid="peer-name-input" />
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="addDialogOpen = false">Cancel</el-button>
-      <el-button type="primary" :loading="creating" @click="create">Create</el-button>
+      <el-button @click="addDialogOpen = false" data-testid="add-peer-cancel">Cancel</el-button>
+      <el-button type="primary" :loading="creating" @click="create" data-testid="add-peer-create">Create</el-button>
     </template>
   </el-dialog>
 

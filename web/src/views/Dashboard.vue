@@ -44,8 +44,9 @@ onMounted(refresh)
       show-icon
       title="Router port forwarding required"
       style="margin-bottom: 16px"
+      data-testid="port-forward-reminder"
     >
-      Forward UDP port <strong>{{ status.listen_port }}</strong> on your router
+      Forward UDP port <strong data-testid="listen-port">{{ status.listen_port }}</strong> on your router
       to this device so clients can connect from outside the LAN.
     </el-alert>
 
