@@ -3,6 +3,7 @@
 export PATH=$SNAP/amneziawg-tools/bin:$SNAP/bin:/usr/sbin:/sbin:$PATH
 export WG_QUICK_USERSPACE_IMPLEMENTATION=$SNAP/amneziawg-go/amneziawg-go
 export WG_SUDO=1
+export LOG_LEVEL=verbose
 
 INTERFACE=awg0
 CONF=$SNAP_DATA/config/${INTERFACE}.conf
