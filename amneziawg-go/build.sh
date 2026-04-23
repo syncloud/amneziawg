@@ -20,26 +20,17 @@ wget -q \
   -O src.tar.gz
 tar xf src.tar.gz --strip-components=1 --no-same-owner --no-same-permissions
 
-# Log which select case fires in main.go so we can diagnose early shutdowns.
+# The inotify watcher in ipc/uapi_linux.go reads events into a zero-byte
+# buffer (`var buf [0]byte`). Linux's inotify_read returns EINVAL if the
+# buffer is too small for the next event, so the first IN_ATTRIB fires
+# and the daemon silently shuts down. Size the buffer properly.
 python3 - <<'PY'
-import re
-p = 'main.go'
+p = 'ipc/uapi_linux.go'
 s = open(p).read()
-old = '''	select {
-	case <-term:
-	case <-errs:
-	case <-device.Wait():
-	}'''
-new = '''	select {
-	case sig := <-term:
-		logger.Errorf("Shutting down: signal %v", sig)
-	case e := <-errs:
-		logger.Errorf("Shutting down: errs channel: %v", e)
-	case <-device.Wait():
-		logger.Errorf("Shutting down: device.Wait() fired")
-	}'''
+old = 'var buf [0]byte'
+new = 'var buf [4096]byte'
 if old not in s:
-    raise SystemExit('select block not found')
+    raise SystemExit('inotify buffer decl not found in ' + p)
 open(p, 'w').write(s.replace(old, new))
 PY
 
