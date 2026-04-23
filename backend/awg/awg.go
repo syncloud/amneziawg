@@ -81,9 +81,12 @@ func (c *Client) SyncConf(stripped string) error {
 }
 
 func run(name string, args ...string) (string, error) {
-	out, err := exec.Command(name, args...).Output()
+	var stderr strings.Builder
+	cmd := exec.Command(name, args...)
+	cmd.Stderr = &stderr
+	out, err := cmd.Output()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("%w: %s", err, strings.TrimSpace(stderr.String()))
 	}
 	return string(out), nil
 }

@@ -16,4 +16,11 @@ trap teardown INT TERM EXIT
 $SNAP/bin/firewall apply
 $SNAP/amneziawg-tools/bin/awg-quick up $CONF
 
+SOCK=/var/run/amneziawg/${INTERFACE}.sock
+if [ -S "$SOCK" ]; then
+  chgrp amneziawg /var/run/amneziawg "$SOCK"
+  chmod 750 /var/run/amneziawg
+  chmod 660 "$SOCK"
+fi
+
 while true; do sleep 60; done
