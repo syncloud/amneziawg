@@ -20,20 +20,6 @@ wget -q \
   -O src.tar.gz
 tar xf src.tar.gz --strip-components=1 --no-same-owner --no-same-permissions
 
-# The inotify watcher in ipc/uapi_linux.go reads events into a zero-byte
-# buffer (`var buf [0]byte`). Linux's inotify_read returns EINVAL if the
-# buffer is too small for the next event, so the first IN_ATTRIB fires
-# and the daemon silently shuts down. Size the buffer properly.
-python3 - <<'PY'
-p = 'ipc/uapi_linux.go'
-s = open(p).read()
-old = 'var buf [0]byte'
-new = 'var buf [4096]byte'
-if old not in s:
-    raise SystemExit('inotify buffer decl not found in ' + p)
-open(p, 'w').write(s.replace(old, new))
-PY
-
 CGO_ENABLED=0 go build \
   -trimpath \
   -ldflags "-s -w -X github.com/amnezia-vpn/amneziawg-go/ipc.socketDirectory=/var/snap/amneziawg/current/run/amneziawg" \

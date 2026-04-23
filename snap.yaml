@@ -15,7 +15,6 @@ apps:
     restart-delay: 10s
 
   nginx:
-    user: amneziawg
     command: bin/service.nginx.sh
     daemon: simple
     start-timeout: 600s

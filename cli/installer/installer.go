@@ -91,16 +91,10 @@ func New(logger *zap.Logger) *Installer {
 }
 
 func (i *Installer) Install() error {
-	if err := linux.CreateUser(App); err != nil {
-		return err
-	}
 	if err := i.initServerState(); err != nil {
 		return err
 	}
 	if err := i.UpdateConfigs(); err != nil {
-		return err
-	}
-	if err := i.FixPermissions(); err != nil {
 		return err
 	}
 	return i.StorageChange()
@@ -115,9 +109,6 @@ func (i *Installer) Configure() error {
 		if err := i.Initialize(); err != nil {
 			return err
 		}
-	}
-	if err := i.FixPermissions(); err != nil {
-		return err
 	}
 	return i.UpdateVersion()
 }
@@ -146,18 +137,12 @@ func (i *Installer) PostRefresh() error {
 	if err := i.UpdateConfigs(); err != nil {
 		return err
 	}
-	if err := i.ClearVersion(); err != nil {
-		return err
-	}
-	return i.FixPermissions()
+	return i.ClearVersion()
 }
 
 func (i *Installer) StorageChange() error {
-	storageDir, err := i.platformClient.InitStorage(App, App)
-	if err != nil {
-		return err
-	}
-	return linux.Chown(storageDir, App)
+	_, err := i.platformClient.InitStorage(App, App)
+	return err
 }
 
 func (i *Installer) ClearVersion() error {
@@ -238,9 +223,6 @@ func (i *Installer) UpdateConfigs() error {
 		path.Join(i.configDir),
 		path.Join(i.commonDir, "db"),
 	); err != nil {
-		return err
-	}
-	if err := linux.Chown(i.dataDir, App); err != nil {
 		return err
 	}
 
@@ -362,13 +344,6 @@ func (i *Installer) RestorePostStart() error {
 
 func (i *Installer) AccessChange() error {
 	return i.UpdateConfigs()
-}
-
-func (i *Installer) FixPermissions() error {
-	if err := linux.Chown(i.dataDir, App); err != nil {
-		return err
-	}
-	return linux.Chown(i.commonDir, App)
 }
 
 func getOrCreateUuid(file string) (string, error) {
