@@ -21,7 +21,7 @@ wget -q \
 tar xf src.tar.gz --strip-components=1 --no-same-owner --no-same-permissions
 
 cd src
-make LDFLAGS='-static -s' wg
+make RUNSTATEDIR=/var/snap/amneziawg/current/run LDFLAGS='-static -s' wg
 cp wg ${BUILD_DIR}/bin/awg
 
 cp wg-quick/linux.bash ${BUILD_DIR}/bin/awg-quick

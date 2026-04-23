@@ -22,5 +22,5 @@ tar xf src.tar.gz --strip-components=1 --no-same-owner --no-same-permissions
 
 CGO_ENABLED=0 go build \
   -trimpath \
-  -ldflags "-s -w" \
+  -ldflags "-s -w -X github.com/amnezia-vpn/amneziawg-go/ipc.socketDirectory=/var/snap/amneziawg/current/run/amneziawg" \
   -o ${BUILD_DIR}/amneziawg-go
