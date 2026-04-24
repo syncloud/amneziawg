@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+
+	"backend/db"
 )
 
 func (s *Service) RegisterRoutes(mux *http.ServeMux) {
@@ -20,6 +22,9 @@ func (s *Service) handleList(w http.ResponseWriter, _ *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+	if peers == nil {
+		peers = []db.Peer{}
 	}
 	writeJSON(w, peers)
 }
