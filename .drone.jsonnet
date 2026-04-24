@@ -134,7 +134,7 @@ local build(arch, test_ui) = [{
                         image: 'python:' + python,
                         privileged: true,
                         commands: [
-                          './ci/upgrade.sh ' + name + ' ' + distro_default + ' $DRONE_BUILD_NUMBER ' + browser,
+                          './ci/upgrade.sh ' + name + ' ' + distro_default + ' $DRONE_BUILD_NUMBER',
                         ],
                       },
                     ] else []) + [
