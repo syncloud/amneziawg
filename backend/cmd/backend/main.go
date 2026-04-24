@@ -126,7 +126,7 @@ func run(logger *zap.Logger) error {
 	if err != nil {
 		return fmt.Errorf("listen %s: %w", backendSock, err)
 	}
-	if err := os.Chmod(backendSock, 0660); err != nil {
+	if err := os.Chmod(backendSock, 0666); err != nil {
 		return fmt.Errorf("chmod socket: %w", err)
 	}
 

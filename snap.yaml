@@ -20,6 +20,7 @@ apps:
     start-timeout: 600s
     restart-condition: always
     restart-delay: 10s
+    user: amneziawg
 
   cli:
     command: bin/cli
