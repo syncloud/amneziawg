@@ -233,6 +233,9 @@ func (i *Installer) UpdateConfigs() error {
 	if err := chownTo(nginxDir, App); err != nil {
 		return err
 	}
+	if err := chownTo(i.commonDir, App); err != nil {
+		return err
+	}
 
 	appUrl, err := i.platformClient.GetAppUrl(App)
 	if err != nil {
