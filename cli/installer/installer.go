@@ -91,6 +91,9 @@ func New(logger *zap.Logger) *Installer {
 }
 
 func (i *Installer) Install() error {
+	if err := linux.CreateUser(App); err != nil {
+		return err
+	}
 	if err := i.initServerState(); err != nil {
 		return err
 	}
