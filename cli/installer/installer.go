@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"strings"
 	"text/template"
@@ -221,11 +222,15 @@ func (i *Installer) generateServerKeypair() (string, string, error) {
 }
 
 func (i *Installer) UpdateConfigs() error {
+	nginxDir := path.Join(i.dataDir, "nginx")
 	if err := linux.CreateMissingDirs(
-		path.Join(i.dataDir, "nginx"),
+		nginxDir,
 		path.Join(i.configDir),
 		path.Join(i.commonDir, "db"),
 	); err != nil {
+		return err
+	}
+	if err := chownTo(nginxDir, App); err != nil {
 		return err
 	}
 
@@ -347,6 +352,15 @@ func (i *Installer) RestorePostStart() error {
 
 func (i *Installer) AccessChange() error {
 	return i.UpdateConfigs()
+}
+
+func chownTo(dir, username string) error {
+	cmd := exec.Command("chown", fmt.Sprintf("%s:%s", username, username), dir)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("chown %s: %w: %s", dir, err, strings.TrimSpace(string(out)))
+	}
+	return nil
 }
 
 func getOrCreateUuid(file string) (string, error) {
