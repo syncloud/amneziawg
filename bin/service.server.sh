@@ -14,6 +14,9 @@ teardown() {
 }
 trap teardown INT TERM EXIT
 
+echo 1 > /proc/sys/net/ipv4/ip_forward || true
+echo 1 > /proc/sys/net/ipv6/conf/all/forwarding || true
+
 $SNAP/bin/firewall apply
 $SNAP/amneziawg-tools/bin/awg-quick up $CONF
 
