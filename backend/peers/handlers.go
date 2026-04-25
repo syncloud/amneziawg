@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"backend/db"
 )
@@ -62,14 +63,32 @@ func (s *Service) handleDownloadConfig(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	conf, err := s.ClientConfig(id)
+	conf, peer, err := s.ClientConfig(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 	w.Header().Set("Content-Type", "text/plain")
-	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="peer-%d.conf"`, id))
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.conf"`, sanitizeFilename(peer.Name)))
 	_, _ = w.Write([]byte(conf))
+}
+
+func sanitizeFilename(name string) string {
+	mapped := strings.Map(func(r rune) rune {
+		switch {
+		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9':
+			return r
+		case r == '-', r == '_', r == '.':
+			return r
+		case r == ' ':
+			return '_'
+		}
+		return -1
+	}, name)
+	if mapped == "" {
+		return "peer"
+	}
+	return mapped
 }
 
 func (s *Service) handleQR(w http.ResponseWriter, r *http.Request) {

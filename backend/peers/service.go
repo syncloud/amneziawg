@@ -80,13 +80,13 @@ func (s *Service) Delete(id int64) error {
 	return s.syncServerConf()
 }
 
-func (s *Service) ClientConfig(id int64) (string, error) {
+func (s *Service) ClientConfig(id int64) (string, db.Peer, error) {
 	peer, err := s.DB.GetPeer(id)
 	if err != nil {
-		return "", err
+		return "", db.Peer{}, err
 	}
 	if peer.PrivateKey == "" {
-		return "", fmt.Errorf("private key already delivered; create a new peer to re-enroll")
+		return "", peer, fmt.Errorf("private key already delivered; create a new peer to re-enroll")
 	}
 	data := struct {
 		Peer            db.Peer
@@ -101,13 +101,13 @@ func (s *Service) ClientConfig(id int64) (string, error) {
 	}
 	var buf bytes.Buffer
 	if err := s.ClientTemplate.Execute(&buf, data); err != nil {
-		return "", err
+		return "", peer, err
 	}
-	return buf.String(), nil
+	return buf.String(), peer, nil
 }
 
 func (s *Service) QRCode(id int64) ([]byte, error) {
-	conf, err := s.ClientConfig(id)
+	conf, _, err := s.ClientConfig(id)
 	if err != nil {
 		return nil, err
 	}
