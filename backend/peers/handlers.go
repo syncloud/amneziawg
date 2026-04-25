@@ -15,7 +15,6 @@ func (s *Service) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/peers", s.handleCreate)
 	mux.HandleFunc("DELETE /api/peers/{id}", s.handleDelete)
 	mux.HandleFunc("GET /api/peers/{id}/config", s.handleDownloadConfig)
-	mux.HandleFunc("GET /api/peers/{id}/qr", s.handleQR)
 }
 
 func (s *Service) handleList(w http.ResponseWriter, _ *http.Request) {
@@ -89,21 +88,6 @@ func sanitizeFilename(name string) string {
 		return "peer"
 	}
 	return mapped
-}
-
-func (s *Service) handleQR(w http.ResponseWriter, r *http.Request) {
-	id, err := parseID(r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	png, err := s.QRCode(id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-	w.Header().Set("Content-Type", "image/png")
-	_, _ = w.Write(png)
 }
 
 func parseID(r *http.Request) (int64, error) {

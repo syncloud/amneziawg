@@ -7,8 +7,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/skip2/go-qrcode"
-
 	"backend/awg"
 	"backend/config"
 	"backend/db"
@@ -136,14 +134,6 @@ func (s *Service) ClientConfig(id int64) (string, db.Peer, error) {
 		return "", peer, err
 	}
 	return buf.String(), peer, nil
-}
-
-func (s *Service) QRCode(id int64) ([]byte, error) {
-	conf, _, err := s.ClientConfig(id)
-	if err != nil {
-		return nil, err
-	}
-	return qrcode.Encode(conf, qrcode.Medium, 512)
 }
 
 func (s *Service) nextFreeAddress() (string, error) {

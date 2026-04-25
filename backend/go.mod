@@ -4,7 +4,6 @@ go 1.26
 
 require (
 	github.com/coreos/go-oidc/v3 v3.11.0
-	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/spf13/cobra v1.7.0
 	go.uber.org/zap v1.25.0
 	golang.org/x/oauth2 v0.23.0
