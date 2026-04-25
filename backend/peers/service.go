@@ -14,11 +14,7 @@ import (
 	"backend/db"
 )
 
-const (
-	v6Prefix       = "fd00:awg::"
-	ServerV6Addr   = v6Prefix + "1/64"
-	ServerV6Inside = v6Prefix + "1"
-)
+const v6Prefix = "fd86:abcd::"
 
 func PeerV6Host(addressV4 string) string {
 	s := addressV4
@@ -29,7 +25,11 @@ func PeerV6Host(addressV4 string) string {
 	if len(parts) != 4 {
 		return ""
 	}
-	return fmt.Sprintf("%s%x", v6Prefix, atoi(parts[3]))
+	addr := fmt.Sprintf("%s%x", v6Prefix, atoi(parts[3]))
+	if ip := net.ParseIP(addr); ip == nil || ip.To4() != nil {
+		return ""
+	}
+	return addr
 }
 
 func atoi(s string) int {

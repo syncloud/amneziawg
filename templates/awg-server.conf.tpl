@@ -1,7 +1,7 @@
 [Interface]
 PrivateKey = {{ .ServerPrivateKey }}
 ListenPort = {{ .ListenPort }}
-Address    = 10.9.0.1/24, fd00:awg::1/64
+Address    = 10.9.0.1/24, fd86:abcd::1/64
 
 Jc = {{ .Jc }}
 Jmin = {{ .Jmin }}
