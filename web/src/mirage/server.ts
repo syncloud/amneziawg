@@ -1,5 +1,4 @@
 import { createServer, Response } from 'miragejs'
-import QRCode from 'qrcode'
 import type { Peer, Status } from '@/api'
 
 type MirageRequest = {
@@ -66,15 +65,6 @@ PersistentKeepalive = 25
 `
 }
 
-async function pngFromText(text: string): Promise<ArrayBuffer> {
-  const dataUrl = await QRCode.toDataURL(text, { width: 512, margin: 1 })
-  const base64 = dataUrl.split(',')[1]
-  const bin = atob(base64)
-  const buf = new Uint8Array(bin.length)
-  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i)
-  return buf.buffer
-}
-
 function randKey(prefix: string): string {
   return `${prefix}_${Math.random().toString(36).slice(2, 10).toUpperCase()}_STUB====`
 }
@@ -128,14 +118,7 @@ export function makeServer() {
         return new Response(200, { 'Content-Type': 'text/plain' }, sampleConf(peer))
       })
 
-      this.get('/api/peers/:id/qr', async (_: unknown, request: MirageRequest) => {
-        const peer = state.peers.find((p) => p.id === Number(request.params.id))
-        if (!peer) return new Response(404, {}, 'not found')
-        const png = await pngFromText(sampleConf(peer))
-        return new Response(200, { 'Content-Type': 'image/png' }, png)
-      })
-
-      this.get('/api/status', (): Status => ({
+this.get('/api/status', (): Status => ({
         listen_port: state.listenPort,
         app_domain: state.appDomain,
         peers: statusPeers(),

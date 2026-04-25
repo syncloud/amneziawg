@@ -1,0 +1,144 @@
+/*
+ * Theme tokens taken from amnezia-vpn/amneziawg-android
+ * (ui/src/main/res/values/colors.xml + themes.xml).
+ * Material 3 dark scheme + Amnezia's tunnel-status signal colors.
+ */
+html {
+  color-scheme: dark;
+}
+
+html,
+:root,
+html.dark {
+  --awg-bg: #15181b;            /* md_theme_light_primary — Amnezia's signature near-black */
+  --awg-surface: #1b1b1f;       /* md_theme_dark_background / surface */
+  --awg-surface-2: #2a2a2e;     /* lifted surface */
+  --awg-border: #44474f;        /* md_theme_dark_outlineVariant / surfaceVariant */
+  --awg-text: #e3e2e6;          /* md_theme_dark_onSurface */
+  --awg-text-2: #c4c6d0;        /* md_theme_dark_onSurfaceVariant */
+  --awg-text-muted: #8e9099;    /* md_theme_dark_outline */
+  --awg-accent: #adc7ff;        /* md_theme_dark_inversePrimary — their action-button blue */
+  --awg-accent-2: #8badff;
+  --awg-accent-soft: rgba(173, 199, 255, 0.16);
+
+  --awg-connected: #4caf50;     /* tunnel_status_connected */
+  --awg-connecting: #ff9800;    /* tunnel_status_connecting */
+  --awg-disconnected: #f44336;  /* tunnel_status_disconnected */
+
+  --el-color-primary: var(--awg-accent);
+  --el-color-primary-light-3: #c1d3fa;
+  --el-color-primary-light-5: #d1deff;
+  --el-color-primary-light-7: #dfe7ff;
+  --el-color-primary-light-8: #e8eeff;
+  --el-color-primary-light-9: rgba(173, 199, 255, 0.12);
+  --el-color-primary-dark-2: var(--awg-accent-2);
+
+  --el-color-success: var(--awg-connected);
+  --el-color-success-light-3: #6ec072;
+  --el-color-success-light-7: rgba(76, 175, 80, 0.18);
+
+  --el-color-danger: var(--awg-disconnected);
+  --el-color-warning: var(--awg-connecting);
+
+  --el-bg-color: var(--awg-surface);
+  --el-bg-color-page: var(--awg-bg);
+  --el-bg-color-overlay: var(--awg-surface-2);
+
+  --el-text-color-primary: var(--awg-text);
+  --el-text-color-regular: var(--awg-text);
+  --el-text-color-secondary: var(--awg-text-2);
+  --el-text-color-placeholder: var(--awg-text-muted);
+  --el-text-color-disabled: var(--awg-text-muted);
+
+  --el-border-color: var(--awg-border);
+  --el-border-color-light: var(--awg-border);
+  --el-border-color-lighter: var(--awg-border);
+  --el-border-color-extra-light: var(--awg-border);
+
+  --el-fill-color: var(--awg-surface-2);
+  --el-fill-color-light: var(--awg-surface-2);
+  --el-fill-color-lighter: var(--awg-surface);
+  --el-fill-color-extra-light: var(--awg-surface);
+  --el-fill-color-blank: var(--awg-surface);
+
+  --el-mask-color: rgba(0, 0, 0, 0.7);
+
+  --el-font-family: 'Roboto', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+  background: var(--awg-bg);
+  color: var(--awg-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+html.dark .el-button--primary,
+.el-button--primary {
+  --el-button-bg-color: #005bc0 !important;
+  --el-button-hover-bg-color: #0a6ed4 !important;
+  --el-button-active-bg-color: #00489a !important;
+  --el-button-border-color: #005bc0 !important;
+  --el-button-hover-border-color: #0a6ed4 !important;
+  --el-button-active-border-color: #00489a !important;
+  --el-button-text-color: #ffffff !important;
+  --el-button-hover-text-color: #ffffff !important;
+  --el-button-active-text-color: #ffffff !important;
+}
+
+.el-card {
+  background: var(--awg-surface);
+  border-color: var(--awg-border);
+}
+
+.el-table,
+.el-table tr,
+.el-table td.el-table__cell,
+.el-table th.el-table__cell {
+  background: var(--awg-surface);
+  border-color: var(--awg-border);
+}
+
+.el-table th.el-table__cell {
+  background: var(--awg-surface-2);
+}
+
+.el-alert {
+  border: 1px solid var(--awg-border);
+  background: var(--awg-surface-2);
+}
+
+.el-alert--warning {
+  background: rgba(255, 152, 0, 0.08);
+  border-color: rgba(255, 152, 0, 0.3);
+}
+
+.el-alert--error {
+  background: rgba(244, 67, 54, 0.08);
+  border-color: rgba(244, 67, 54, 0.3);
+}
+
+.el-dialog {
+  background: var(--awg-surface);
+  border: 1px solid var(--awg-border);
+  border-radius: 16px;
+}
+.el-dialog__header {
+  border-bottom: 1px solid var(--awg-border);
+  padding: 14px 18px;
+  margin-right: 0;
+}
+.el-dialog__body {
+  padding: 18px;
+}
+.el-dialog__footer {
+  border-top: 1px solid var(--awg-border);
+  padding: 12px 18px;
+}
+
+.el-input__wrapper {
+  background: var(--awg-surface-2);
+  box-shadow: 0 0 0 1px var(--awg-border) inset;
+}
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--awg-accent) inset;
+}

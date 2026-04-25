@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-const route = useRoute()
+import { notify } from '@/notify'
+
+const isStub = !!import.meta.env.VITE_STUB
+
+function stubLogout(e: MouseEvent) {
+  if (!isStub) return
+  e.preventDefault()
+  notify.info('Logout stubbed in dev — wired to /auth/logout in production')
+}
 </script>
 
 <template>
   <el-container class="app-container">
     <el-header class="app-header" height="auto">
       <div class="header-top">
-        <div class="app-title">AmneziaWG</div>
-        <a href="/auth/logout" class="logout-link" data-testid="logout">
+        <div class="app-title">
+          <span class="brand-dot" />
+          <span class="brand-text">AmneziaWG</span>
+        </div>
+        <a href="/auth/logout" class="logout-link" data-testid="logout" @click="stubLogout">
           <el-button text>Logout</el-button>
         </a>
       </div>
-      <el-menu
-        :default-active="route.name as string"
-        mode="horizontal"
-        router
-        :ellipsis="false"
-        class="app-menu"
-      >
-        <el-menu-item index="dashboard" :route="{ name: 'dashboard' }" data-testid="nav-dashboard">Dashboard</el-menu-item>
-        <el-menu-item index="peers" :route="{ name: 'peers' }" data-testid="nav-peers">Peers</el-menu-item>
-      </el-menu>
     </el-header>
     <el-main class="app-main">
       <router-view />
@@ -73,31 +73,30 @@ body {
   padding: 12px 0;
 }
 .app-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 600;
   font-size: 18px;
+  letter-spacing: 0.2px;
+}
+.brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--awg-connected);
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.16), 0 0 10px rgba(76, 175, 80, 0.6);
+}
+.brand-text {
+  color: var(--awg-text);
 }
 .logout-link {
   text-decoration: none;
-}
-.app-menu {
-  border-bottom: none;
 }
 .app-main {
   padding: 16px;
 }
 @media (min-width: 769px) {
-  .app-header {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-  }
-  .header-top {
-    padding: 12px 0;
-    flex: 0 0 auto;
-  }
-  .app-menu {
-    flex: 1;
-  }
   .app-main {
     padding: 24px;
   }
@@ -108,15 +107,6 @@ body {
   }
   .header-top {
     padding: 10px 0;
-  }
-  .app-menu :deep(.el-menu-item) {
-    padding: 0 16px;
-    height: 44px;
-    line-height: 44px;
-    font-size: 14px;
-    flex: 1;
-    text-align: center;
-    justify-content: center;
   }
 }
 </style>

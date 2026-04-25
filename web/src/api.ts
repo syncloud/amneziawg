@@ -46,6 +46,10 @@ export const api = {
       if (!r.ok) throw new Error(`${r.status}`)
     }),
   peerConfigURL: (id: number) => `/api/peers/${id}/config`,
-  peerQRURL: (id: number) => `/api/peers/${id}/qr`,
+  peerConfigText: async (id: number): Promise<string> => {
+    const r = await fetch(`/api/peers/${id}/config`)
+    if (!r.ok) throw new Error(`${r.status}: ${await r.text()}`)
+    return await r.text()
+  },
   status: () => fetch('/api/status').then(json<Status>),
 }
