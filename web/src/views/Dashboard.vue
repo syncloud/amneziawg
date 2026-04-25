@@ -29,7 +29,7 @@ onMounted(refresh)
 <template>
   <el-row :gutter="16">
     <el-col :span="24">
-      <el-alert v-if="error" type="error" :closable="false" show-icon>
+      <el-alert v-if="error" type="error" :closable="false" show-icon data-testid="dashboard-error">
         {{ error }}
       </el-alert>
     </el-col>

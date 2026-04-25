@@ -8,19 +8,40 @@ import (
 )
 
 type Firewall struct {
-	TableName       string
-	InternalIface   string
-	ExternalIface   string
+	TableName     string
+	InternalIface string
+	ExternalIface string
+}
+
+var families = []nftables.TableFamily{
+	nftables.TableFamilyIPv4,
+	nftables.TableFamilyIPv6,
 }
 
 func (f *Firewall) Apply() error {
+	var lastErr error
+	applied := 0
+	for _, family := range families {
+		if err := f.applyFamily(family); err != nil {
+			lastErr = err
+			continue
+		}
+		applied++
+	}
+	if applied == 0 {
+		return fmt.Errorf("no nftables family usable: %w", lastErr)
+	}
+	return nil
+}
+
+func (f *Firewall) applyFamily(family nftables.TableFamily) error {
 	c, err := nftables.New()
 	if err != nil {
 		return fmt.Errorf("nftables conn: %w", err)
 	}
 
 	table := &nftables.Table{
-		Family: nftables.TableFamilyINet,
+		Family: family,
 		Name:   f.TableName,
 	}
 	c.AddTable(table)
@@ -68,10 +89,12 @@ func (f *Firewall) Teardown() error {
 	if err != nil {
 		return fmt.Errorf("nftables conn: %w", err)
 	}
-	c.DelTable(&nftables.Table{
-		Family: nftables.TableFamilyINet,
-		Name:   f.TableName,
-	})
+	for _, family := range families {
+		c.DelTable(&nftables.Table{
+			Family: family,
+			Name:   f.TableName,
+		})
+	}
 	return c.Flush()
 }
 

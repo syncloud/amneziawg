@@ -73,7 +73,10 @@ def test_visible_through_platform(app_domain):
 
 
 def test_server_interface_up(device):
+    active = device.run_ssh('systemctl is-active snap.amneziawg.server.service').strip()
+    assert active == 'active', 'amneziawg.server is {0}'.format(active)
     device.run_ssh('/snap/amneziawg/current/amneziawg-tools/bin/awg show awg0')
+    device.run_ssh('/snap/amneziawg/current/bin/firewall apply')
 
 
 def test_storage_change_event(device):
