@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"net"
+	"strings"
 	"text/template"
 
 	"github.com/skip2/go-qrcode"
@@ -12,6 +13,35 @@ import (
 	"backend/config"
 	"backend/db"
 )
+
+const (
+	v6Prefix       = "fd00:awg::"
+	ServerV6Addr   = v6Prefix + "1/64"
+	ServerV6Inside = v6Prefix + "1"
+)
+
+func PeerV6Host(addressV4 string) string {
+	s := addressV4
+	if i := strings.IndexByte(s, '/'); i >= 0 {
+		s = s[:i]
+	}
+	parts := strings.Split(s, ".")
+	if len(parts) != 4 {
+		return ""
+	}
+	return fmt.Sprintf("%s%x", v6Prefix, atoi(parts[3]))
+}
+
+func atoi(s string) int {
+	n := 0
+	for _, c := range s {
+		if c < '0' || c > '9' {
+			return 0
+		}
+		n = n*10 + int(c-'0')
+	}
+	return n
+}
 
 type Service struct {
 	DB     *db.DB
@@ -93,11 +123,13 @@ func (s *Service) ClientConfig(id int64) (string, db.Peer, error) {
 		Config          *config.Config
 		ServerPublicKey string
 		Endpoint        string
+		PeerV6          string
 	}{
 		Peer:            peer,
 		Config:          s.Config,
 		ServerPublicKey: s.Config.PublicKey,
 		Endpoint:        fmt.Sprintf("%s:%d", s.Config.AppDomain, s.Config.ListenPort),
+		PeerV6:          PeerV6Host(peer.AddressV4),
 	}
 	var buf bytes.Buffer
 	if err := s.ClientTemplate.Execute(&buf, data); err != nil {

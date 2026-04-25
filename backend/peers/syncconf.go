@@ -48,10 +48,14 @@ func (s *Service) syncServerConf() error {
 		H4:               s.Config.Obfuscation.H4,
 	}
 	for _, p := range peers {
+		allowed := p.AddressV4
+		if v6 := PeerV6Host(p.AddressV4); v6 != "" {
+			allowed = allowed + ", " + v6 + "/128"
+		}
 		ctx.Peers = append(ctx.Peers, serverPeer{
 			Name:       p.Name,
 			PublicKey:  p.PublicKey,
-			AllowedIPs: p.AddressV4,
+			AllowedIPs: allowed,
 		})
 	}
 
