@@ -162,7 +162,7 @@ func (i *Installer) UpdateVersion() error {
 }
 
 func (i *Installer) initServerState() error {
-	for _, d := range []string{i.dataDir, i.configDir, path.Join(i.dataDir, "nginx"), path.Join(i.commonDir, "db")} {
+	for _, d := range []string{i.dataDir, i.configDir, path.Join(i.dataDir, "nginx"), path.Join(i.dataDir, "db")} {
 		if err := linux.CreateMissingDirs(d); err != nil {
 			return err
 		}
@@ -226,7 +226,7 @@ func (i *Installer) UpdateConfigs() error {
 	if err := linux.CreateMissingDirs(
 		nginxDir,
 		path.Join(i.configDir),
-		path.Join(i.commonDir, "db"),
+		path.Join(i.dataDir, "db"),
 	); err != nil {
 		return err
 	}
