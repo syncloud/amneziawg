@@ -88,6 +88,10 @@ curl -O "http://ci.syncloud.org:8081/files/amneziawg/{N}-amd64/distro/desktop/sc
 - Navigate via clicks: one `page.goto('/')` per test, then `getByTestId('nav-peers').click()`.
   `page.goto('/peers')` bypasses nav and hides routing/auth bugs.
 
+# DB schema migrations are mandatory
+
+The peers DB lives in `$SNAP_DATA/db/data.db` and is preserved across `snap refresh` (upgrades). Any change to a table the running app reads — adding a column, renaming, changing type, dropping — must ship with a forward migration that runs on backend startup, otherwise an upgraded binary will hit a fresh-from-disk old schema and crash or corrupt rows. There is no migration framework yet; when the first schema change lands, add one (e.g. a `schema_version` table + ordered up-migrations applied at `db.Open`) before doing anything else.
+
 # Running Drone builds locally
 
 ```
