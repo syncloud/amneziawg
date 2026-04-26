@@ -1,43 +1,22 @@
 package portpicker
 
 import (
-	"crypto/rand"
-	"encoding/binary"
 	"fmt"
 	"net"
 )
 
 const (
-	minPort        = 10000
-	maxPort        = 65535
-	excludedWGPort = 51820 // vanilla WireGuard default — DPI-flagged
-	maxAttempts    = 100
+	startPort = 55424
+	maxPort   = 65535
 )
 
 func Pick() (int, error) {
-	for attempt := 0; attempt < maxAttempts; attempt++ {
-		port, err := randPort()
-		if err != nil {
-			return 0, err
-		}
-		if port == excludedWGPort {
-			continue
-		}
+	for port := startPort; port <= maxPort; port++ {
 		if isUDPFree(port) {
 			return port, nil
 		}
 	}
-	return 0, fmt.Errorf("could not find a free UDP port after %d attempts", maxAttempts)
-}
-
-func randPort() (int, error) {
-	span := uint32(maxPort - minPort + 1)
-	var buf [4]byte
-	if _, err := rand.Read(buf[:]); err != nil {
-		return 0, err
-	}
-	n := binary.BigEndian.Uint32(buf[:]) % span
-	return minPort + int(n), nil
+	return 0, fmt.Errorf("no free UDP port in [%d,%d]", startPort, maxPort)
 }
 
 func isUDPFree(port int) bool {

@@ -1,31 +1,38 @@
 package portpicker
 
-import "testing"
+import (
+	"net"
+	"testing"
+)
 
-func TestPick_InRangeAndFree(t *testing.T) {
-	for i := 0; i < 5; i++ {
-		port, err := Pick()
-		if err != nil {
-			t.Fatalf("Pick() error: %v", err)
-		}
-		if port < minPort || port > maxPort {
-			t.Errorf("port %d out of [%d,%d]", port, minPort, maxPort)
-		}
-		if port == excludedWGPort {
-			t.Errorf("got excluded WG port %d", port)
-		}
-		if !isUDPFree(port) {
-			t.Errorf("port %d returned as free but bind would fail", port)
-		}
+func TestPickReturns55424WhenFree(t *testing.T) {
+	port, err := Pick()
+	if err != nil {
+		t.Fatalf("Pick: %v", err)
+	}
+	if port != startPort {
+		t.Errorf("expected %d when free, got %d", startPort, port)
+	}
+	if !isUDPFree(port) {
+		t.Errorf("port %d returned as free but bind would fail", port)
 	}
 }
 
-func TestIsUDPFree(t *testing.T) {
+func TestPickWalksUpWhenStartTaken(t *testing.T) {
+	conn, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.IPv4zero, Port: startPort})
+	if err != nil {
+		t.Skipf("could not occupy %d to set up test: %v", startPort, err)
+	}
+	defer conn.Close()
+
 	port, err := Pick()
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Pick: %v", err)
 	}
-	if !isUDPFree(port) {
-		t.Errorf("fresh port %d should be free", port)
+	if port == startPort {
+		t.Errorf("expected port > %d when start is occupied, got %d", startPort, port)
+	}
+	if port < startPort || port > maxPort {
+		t.Errorf("port %d out of [%d,%d]", port, startPort, maxPort)
 	}
 }
