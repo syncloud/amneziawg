@@ -67,7 +67,7 @@ func (s *Service) handleDownloadConfig(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.conf"`, sanitizeFilename(peer.Name)))
 	_, _ = w.Write([]byte(conf))
 }

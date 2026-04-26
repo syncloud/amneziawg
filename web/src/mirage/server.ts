@@ -115,7 +115,7 @@ export function makeServer() {
       this.get('/api/peers/:id/config', (_: unknown, request: MirageRequest) => {
         const peer = state.peers.find((p) => p.id === Number(request.params.id))
         if (!peer) return new Response(404, {}, 'not found')
-        return new Response(200, { 'Content-Type': 'text/plain' }, sampleConf(peer))
+        return new Response(200, { 'Content-Type': 'application/octet-stream' }, sampleConf(peer))
       })
 
 this.get('/api/status', (): Status => ({
