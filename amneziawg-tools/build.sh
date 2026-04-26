@@ -15,7 +15,7 @@ rm -rf ${WORK}
 mkdir -p ${WORK}
 cd ${WORK}
 
-wget -q \
+wget --tries=5 --waitretry=10 --timeout=60 \
   https://github.com/amnezia-vpn/amneziawg-tools/archive/refs/tags/v${VERSION}.tar.gz \
   -O src.tar.gz
 tar xf src.tar.gz --strip-components=1 --no-same-owner --no-same-permissions
