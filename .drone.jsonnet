@@ -16,7 +16,7 @@ local platform_buster = '25.02';
 local distro_default = 'bookworm';
 local distros = ['bookworm', 'buster'];
 
-local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
+local store_publisher = 'stable-346';
 
 local amneziawg_go_version = '0.2.17';
 local amneziawg_tools_version = '1.0.20260223';
@@ -139,26 +139,16 @@ local build(arch, test_ui) = [{
                       },
                     ] else []) + [
     {
-      name: 'upload',
-      image: 'debian:' + debian,
+      name: 'publish',
+      image: 'syncloud/store-publisher:' + store_publisher,
       environment: {
-        AWS_ACCESS_KEY_ID: { from_secret: 'AWS_ACCESS_KEY_ID' },
-        AWS_SECRET_ACCESS_KEY: { from_secret: 'AWS_SECRET_ACCESS_KEY' },
         SYNCLOUD_TOKEN: { from_secret: 'SYNCLOUD_TOKEN' },
       },
-      commands: ['./ci/upload.sh ' + arch + ' ' + deployer + ' $DRONE_BRANCH'],
-      when: { branch: ['stable', 'master'], event: ['push'] },
-    },
-    {
-      name: 'promote',
-      image: 'debian:' + debian,
-      environment: {
-        AWS_ACCESS_KEY_ID: { from_secret: 'AWS_ACCESS_KEY_ID' },
-        AWS_SECRET_ACCESS_KEY: { from_secret: 'AWS_SECRET_ACCESS_KEY' },
-        SYNCLOUD_TOKEN: { from_secret: 'SYNCLOUD_TOKEN' },
+      command: ['snap', '-c', '${DRONE_BRANCH}'],
+      when: {
+        branch: ['master', 'stable'],
+        event: ['push'],
       },
-      commands: ['./ci/promote.sh ' + arch + ' ' + name + ' ' + deployer],
-      when: { branch: ['stable'], event: ['push'] },
     },
     {
       name: 'artifact',
