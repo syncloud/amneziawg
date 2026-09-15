@@ -1,13 +1,11 @@
 package installer
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path"
 	"strings"
-	"text/template"
 
 	"github.com/google/uuid"
 	"github.com/syncloud/golib/config"
@@ -34,28 +32,6 @@ type Variables struct {
 	OIDCClientID     string
 	OIDCClientSecret string
 	OIDCRedirectURI  string
-
-	ServerPrivateKey string
-	ServerPublicKey  string
-	ListenPort       int
-
-	Jc   int
-	Jmin int
-	Jmax int
-	S1   int
-	S2   int
-	H1   uint32
-	H2   uint32
-	H3   uint32
-	H4   uint32
-
-	Peers []Peer
-}
-
-type Peer struct {
-	Name       string
-	PublicKey  string
-	AllowedIPs string
 }
 
 type Installer struct {
@@ -270,27 +246,6 @@ func (i *Installer) UpdateConfigs() error {
 		return fmt.Errorf("register oidc client: %w", err)
 	}
 
-	priv, err := os.ReadFile(path.Join(i.dataDir, "server.key"))
-	if err != nil {
-		return err
-	}
-	pub, err := os.ReadFile(path.Join(i.dataDir, "server.pub"))
-	if err != nil {
-		return err
-	}
-	var obfParams obfuscation.Params
-	if err := readJSON(path.Join(i.dataDir, "obfuscation.json"), &obfParams); err != nil {
-		return err
-	}
-	portRaw, err := os.ReadFile(path.Join(i.dataDir, "port"))
-	if err != nil {
-		return err
-	}
-	var port int
-	if _, err := fmt.Sscanf(strings.TrimSpace(string(portRaw)), "%d", &port); err != nil {
-		return err
-	}
-
 	variables := Variables{
 		App:              App,
 		AppDir:           i.appDir,
@@ -304,41 +259,9 @@ func (i *Installer) UpdateConfigs() error {
 		OIDCClientID:     App,
 		OIDCClientSecret: oidcSecret,
 		OIDCRedirectURI:  strings.TrimRight(appUrl, "/") + oidcRedirect,
-		ServerPrivateKey: strings.TrimSpace(string(priv)),
-		ServerPublicKey:  strings.TrimSpace(string(pub)),
-		ListenPort:       port,
-		Jc:               obfParams.Jc,
-		Jmin:             obfParams.Jmin,
-		Jmax:             obfParams.Jmax,
-		S1:               obfParams.S1,
-		S2:               obfParams.S2,
-		H1:               obfParams.H1,
-		H2:               obfParams.H2,
-		H3:               obfParams.H3,
-		H4:               obfParams.H4,
 	}
 
-	if err := config.Generate(path.Join(i.appDir, "config"), i.configDir, variables); err != nil {
-		return err
-	}
-	return i.renderServerConf(variables)
-}
-
-func (i *Installer) renderServerConf(variables Variables) error {
-	tplPath := path.Join(i.appDir, "templates", "awg-server.conf.tpl")
-	tpl, err := template.ParseFiles(tplPath)
-	if err != nil {
-		return fmt.Errorf("parse %s: %w", tplPath, err)
-	}
-	var buf bytes.Buffer
-	if err := tpl.Execute(&buf, variables); err != nil {
-		return fmt.Errorf("render %s: %w", tplPath, err)
-	}
-	out := path.Join(i.configDir, "awg0.conf")
-	if err := os.WriteFile(out, buf.Bytes(), 0600); err != nil {
-		return fmt.Errorf("write %s: %w", out, err)
-	}
-	return nil
+	return config.Generate(path.Join(i.appDir, "config"), i.configDir, variables)
 }
 
 func (i *Installer) BackupPreStop() error {

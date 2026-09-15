@@ -51,46 +51,77 @@ func main() {
 			return run(logger)
 		},
 	}
+	cmd.AddCommand(&cobra.Command{
+		Use:          "render-server-conf",
+		Short:        "Regenerate " + serverIface + ".conf from the peers database",
+		SilenceUsage: true,
+		RunE: func(_ *cobra.Command, _ []string) error {
+			b, err := newBackend()
+			if err != nil {
+				return err
+			}
+			return b.peers.RenderServerConf()
+		},
+	})
 	if err := cmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run(logger *zap.Logger) error {
+type backend struct {
+	config *config.Config
+	awg    *awg.Client
+	peers  *peers.Service
+}
+
+func newBackend() (*backend, error) {
 	cfg := &config.Config{DataDir: dataDir}
 	if err := cfg.Load(); err != nil {
-		return fmt.Errorf("load config: %w", err)
+		return nil, fmt.Errorf("load config: %w", err)
 	}
 
 	database, err := db.Open(dbPath)
 	if err != nil {
-		return fmt.Errorf("open db: %w", err)
+		return nil, fmt.Errorf("open db: %w", err)
 	}
 
 	awgClient := &awg.Client{Binary: awgBin, Interface: serverIface}
 
 	serverTpl, err := template.ParseFiles(filepath.Join(templatesDir, "awg-server.conf.tpl"))
 	if err != nil {
-		return fmt.Errorf("parse server template: %w", err)
+		return nil, fmt.Errorf("parse server template: %w", err)
 	}
 	clientTpl, err := template.ParseFiles(filepath.Join(templatesDir, "awg-client.conf.tpl"))
 	if err != nil {
-		return fmt.Errorf("parse client template: %w", err)
+		return nil, fmt.Errorf("parse client template: %w", err)
 	}
 
-	peersService := &peers.Service{
-		DB:             database,
-		AWG:            awgClient,
-		Config:         cfg,
-		ServerTemplate: serverTpl,
-		ClientTemplate: clientTpl,
-		ServerConfPath: serverConfPath,
-		AwgQuickBinary: awgQuickBin,
-		Subnet:         serverSubnet,
-	}
+	return &backend{
+		config: cfg,
+		awg:    awgClient,
+		peers: &peers.Service{
+			DB:             database,
+			AWG:            awgClient,
+			Config:         cfg,
+			ServerTemplate: serverTpl,
+			ClientTemplate: clientTpl,
+			ServerConfPath: serverConfPath,
+			AwgQuickBinary: awgQuickBin,
+			Subnet:         serverSubnet,
+		},
+	}, nil
+}
 
-	statusService := &status.Service{AWG: awgClient, Config: cfg}
+func run(logger *zap.Logger) error {
+	b, err := newBackend()
+	if err != nil {
+		return err
+	}
+	cfg := b.config
+	peersService := b.peers
+
+	statusService := &status.Service{AWG: b.awg, Config: cfg}
 
 	cookieSecret, err := os.ReadFile(secretPath)
 	if err != nil {

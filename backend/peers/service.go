@@ -96,7 +96,13 @@ func (s *Service) Create(req CreateRequest) (db.Peer, error) {
 	peer.PrivateKey = priv
 
 	if err := s.syncServerConf(); err != nil {
-		return peer, fmt.Errorf("sync awg conf: %w", err)
+		if delErr := s.DB.DeletePeer(id); delErr != nil {
+			return db.Peer{}, fmt.Errorf("sync awg conf: %w (rollback: %v)", err, delErr)
+		}
+		if renderErr := s.RenderServerConf(); renderErr != nil {
+			return db.Peer{}, fmt.Errorf("sync awg conf: %w (rollback render: %v)", err, renderErr)
+		}
+		return db.Peer{}, fmt.Errorf("sync awg conf: %w", err)
 	}
 	return peer, nil
 }

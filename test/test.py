@@ -87,6 +87,24 @@ def test_access_change_event(device):
     device.run_ssh('snap run amneziawg.access-change > {0}/access-change.log'.format(TMP_DIR))
 
 
+def test_access_change_keeps_server_conf(device):
+    conf = '/var/snap/amneziawg/current/config/awg0.conf'
+    before = device.run_ssh('cat {0}'.format(conf))
+    device.run_ssh('snap run amneziawg.access-change')
+    after = device.run_ssh('cat {0}'.format(conf))
+    assert before == after
+
+
+def test_server_conf_rendered_from_db_on_restart(device):
+    conf = '/var/snap/amneziawg/current/config/awg0.conf'
+    before = device.run_ssh('stat -c %y {0}'.format(conf)).strip()
+    device.run_ssh('snap restart amneziawg.server')
+    device.run_ssh('systemctl is-active snap.amneziawg.server.service', retries=10)
+    device.run_ssh('/snap/amneziawg/current/amneziawg-tools/bin/awg show awg0')
+    after = device.run_ssh('stat -c %y {0}'.format(conf)).strip()
+    assert after != before, 'awg0.conf was not regenerated at server start'
+
+
 def test_upgrade(app_archive_path, domain, device_password):
     local_install(domain, device_password, app_archive_path)
 
