@@ -28,7 +28,7 @@ type serverPeer struct {
 	AllowedIPs string
 }
 
-func (s *Service) syncServerConf() error {
+func (s *Service) RenderServerConf() error {
 	peers, err := s.DB.ListPeers()
 	if err != nil {
 		return err
@@ -65,6 +65,13 @@ func (s *Service) syncServerConf() error {
 	}
 	if err := os.WriteFile(s.ServerConfPath, buf.Bytes(), 0600); err != nil {
 		return fmt.Errorf("write %s: %w", s.ServerConfPath, err)
+	}
+	return nil
+}
+
+func (s *Service) syncServerConf() error {
+	if err := s.RenderServerConf(); err != nil {
+		return err
 	}
 
 	stripped, err := exec.Command(s.AwgQuickBinary, "strip", s.ServerConfPath).Output()

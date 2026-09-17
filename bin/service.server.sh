@@ -18,6 +18,7 @@ echo 1 > /proc/sys/net/ipv4/ip_forward || true
 echo 1 > /proc/sys/net/ipv6/conf/all/forwarding || true
 
 $SNAP/bin/firewall apply
+$SNAP/backend/backend render-server-conf
 $SNAP/amneziawg-tools/bin/awg-quick up $CONF
 
 while true; do sleep 60; done
