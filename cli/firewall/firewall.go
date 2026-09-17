@@ -2,15 +2,20 @@ package firewall
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 
 	"github.com/google/nftables"
 	"github.com/google/nftables/expr"
 )
 
+const modprobe = "/sbin/modprobe"
+
 type Firewall struct {
 	TableName     string
 	InternalIface string
 	ExternalIface string
+	Modules       []string
 }
 
 var families = []nftables.TableFamily{
@@ -18,7 +23,18 @@ var families = []nftables.TableFamily{
 	nftables.TableFamilyIPv6,
 }
 
+func (f *Firewall) loadModules() {
+	for _, module := range f.Modules {
+		out, err := exec.Command(modprobe, module).CombinedOutput()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "modprobe %s: %v: %s\n", module, err, out)
+		}
+	}
+}
+
 func (f *Firewall) Apply() error {
+	f.loadModules()
+
 	var lastErr error
 	applied := 0
 	for _, family := range families {

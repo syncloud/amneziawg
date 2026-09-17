@@ -177,6 +177,7 @@ local build(arch, test_ui) = [{
       volumes: [
         { name: 'dbus', path: '/var/run/dbus' },
         { name: 'dev', path: '/dev' },
+        { name: 'modules', path: '/lib/modules' },
       ],
     }
     for distro in distros
@@ -185,6 +186,7 @@ local build(arch, test_ui) = [{
   volumes: [
     { name: 'dbus', host: { path: '/var/run/dbus' } },
     { name: 'dev', host: { path: '/dev' } },
+    { name: 'modules', host: { path: '/lib/modules' } },
     { name: 'shm', temp: {} },
     { name: 'videos', temp: {} },
     { name: 'dockersock', temp: {} },
