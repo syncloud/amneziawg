@@ -15,11 +15,14 @@ const (
 	externalIface = "eth0"
 )
 
+var modules = []string{"nf_tables", "nft_chain_nat", "nft_masq"}
+
 func main() {
 	fw := &firewall.Firewall{
 		TableName:     tableName,
 		InternalIface: internalIface,
 		ExternalIface: externalIface,
+		Modules:       modules,
 	}
 
 	cmd := &cobra.Command{
