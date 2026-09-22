@@ -18,8 +18,8 @@ local distros = ['bookworm', 'buster'];
 
 local store_publisher = 'stable-346';
 
-local amneziawg_go_version = '0.2.17';
-local amneziawg_tools_version = '1.0.20260223';
+local amneziawg_go_version = '3.1.20260828';
+local amneziawg_tools_version = '3.1.20260812';
 
 local platform_image(distro, arch) =
   'syncloud/platform-' + distro + '-' + arch + ':' +
