@@ -1,3 +1,4 @@
+import base64
 import os
 from os.path import dirname, join
 from subprocess import check_output
@@ -77,6 +78,14 @@ def test_server_interface_up(device):
     assert active == 'active', 'amneziawg.server is {0}'.format(active)
     device.run_ssh('/snap/amneziawg/current/amneziawg-tools/bin/awg show awg0')
     device.run_ssh('/snap/amneziawg/current/bin/firewall apply')
+
+
+def test_client_handshake(device):
+    with open(join(DIR, 'handshake.sh'), 'rb') as f:
+        script = base64.b64encode(f.read()).decode()
+    device.run_ssh('echo {0} | base64 -d > {1}/handshake.sh'.format(script, TMP_DIR))
+    out = device.run_ssh('bash {0}/handshake.sh'.format(TMP_DIR))
+    assert 'CONNECTION TEST PASSED' in out, out
 
 
 def test_storage_change_event(device):
