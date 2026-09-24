@@ -12,7 +12,7 @@ import (
 	"backend/db"
 )
 
-const v6Prefix = "fd86:abcd::"
+const v6Prefix = "2001:db8:a7c9::"
 
 func PeerV6Host(addressV4 string) string {
 	s := addressV4

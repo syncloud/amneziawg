@@ -69,7 +69,7 @@ func TestRenderServerConfRestoresPeersOverPeerlessFile(t *testing.T) {
 	for _, want := range []string{
 		"[Peer]",
 		"PublicKey  = 1Le9eNZ1ghxociDc+cDaTpW/OiRmHuDXiJM4Bhiy/2c=",
-		"AllowedIPs = 10.9.0.2/32, fd86:abcd::2/128",
+		"AllowedIPs = 10.9.0.2/32, 2001:db8:a7c9::2/128",
 		"ListenPort = 55424",
 	} {
 		if !strings.Contains(conf, want) {
