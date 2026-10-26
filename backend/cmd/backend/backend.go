@@ -75,6 +75,7 @@ func newBackend() (*backend, error) {
 			ServerConfPath: serverConfPath,
 			AwgQuickBinary: awgQuickBin,
 			Subnet:         serverSubnet,
+			LanResolver:    &peers.LanResolver{ResolvConf: "/etc/resolv.conf"},
 		},
 		status: &status.Service{AWG: awgClient, Config: cfg},
 	}, nil

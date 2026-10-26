@@ -37,6 +37,7 @@ func newTestService(t *testing.T) (*Service, string) {
 		ServerTemplate: tpl,
 		ServerConfPath: confPath,
 		Subnet:         "10.9.0.0/24",
+		LanResolver:    &LanResolver{ResolvConf: filepath.Join(dir, "resolv.conf")},
 	}, confPath
 }
 
