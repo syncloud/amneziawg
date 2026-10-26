@@ -1,7 +1,7 @@
 [Interface]
 PrivateKey = {{ .Peer.PrivateKey }}
 Address    = {{ .Peer.AddressV4 }}, {{ .PeerV6 }}/64
-DNS        = 10.9.0.1, 2001:4860:4860::8888
+DNS        = {{ .DNS }}
 
 Jc = {{ .Config.Obfuscation.Jc }}
 Jmin = {{ .Config.Obfuscation.Jmin }}

@@ -52,6 +52,7 @@ type Service struct {
 	ServerConfPath string
 	AwgQuickBinary string
 	Subnet         string
+	LanResolver    *LanResolver
 }
 
 func (s *Service) List() ([]db.Peer, error) {
@@ -122,18 +123,24 @@ func (s *Service) ClientConfig(id int64) (string, db.Peer, error) {
 	if peer.PrivateKey == "" {
 		return "", peer, fmt.Errorf("private key already delivered; create a new peer to re-enroll")
 	}
+	resolver, err := s.LanResolver.Resolve()
+	if err != nil {
+		return "", peer, err
+	}
 	data := struct {
 		Peer            db.Peer
 		Config          *config.Config
 		ServerPublicKey string
 		Endpoint        string
 		PeerV6          string
+		DNS             string
 	}{
 		Peer:            peer,
 		Config:          s.Config,
 		ServerPublicKey: s.Config.PublicKey,
 		Endpoint:        fmt.Sprintf("%s:%d", s.Config.AppDomain, s.Config.ListenPort),
 		PeerV6:          PeerV6Host(peer.AddressV4),
+		DNS:             resolver.String(),
 	}
 	var buf bytes.Buffer
 	if err := s.ClientTemplate.Execute(&buf, data); err != nil {
