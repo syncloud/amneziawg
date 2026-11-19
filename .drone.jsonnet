@@ -2,7 +2,7 @@ local name = 'amneziawg';
 
 local go = '1.26';
 local node = '20.18.1';
-local nginx = '1.29.3-alpine3.22';
+local nginx = '1.30.7-alpine3.24';
 local alpine = '3.22.2';
 local debian = 'bookworm-slim';
 local python = '3.12-slim-bookworm';
